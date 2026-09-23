@@ -1,6 +1,76 @@
-<!DOCTYPE html><html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout('현장 상세', ~{::main})}"><main>
-<div class="page-heading"><div><p class="eyebrow">PRJ-03 · PROJECT</p><h1 th:text="${project.name}"></h1><p><span class="badge" th:text="${project.statusLabel}"></span> <a th:href="@{/customers/{id}(id=${customer.id})}" th:text="${customer.name}"></a></p></div><a class="button secondary" th:href="@{/projects/{id}/edit(id=${project.id})}">정보 수정</a></div>
-<nav class="tabs" aria-label="현장 업무"><a class="active" href="#details">기본정보</a><a th:href="@{/projects/{id}/survey(id=${project.id})}">실측</a><a th:href="@{/estimates}">견적</a><a th:href="@{/contracts}">계약</a><a th:href="@{/schedules}">일정</a><a th:href="@{/work-logs}">작업</a><a th:href="@{/payments}">정산</a><a th:href="@{/completion}">완료 점검</a></nav>
-<section class="panel" id="details"><h2>현장 기본정보</h2><dl class="details"><dt>주소</dt><dd><span th:text="${project.address}"></span> <span th:text="${project.detailAddress}"></span></dd><dt>공사 종류</dt><dd th:text="${project.constructionType}"></dd><dt>희망 시공일</dt><dd th:text="${project.desiredStartDate ?: '미정'}"></dd><dt>주거 유형</dt><dd th:text="${project.housingType ?: '미등록'}"></dd><dt>거주 여부</dt><dd th:text="${project.occupied ? '거주 중' : '공실'}"></dd><dt>주의사항</dt><dd class="preserve-lines" th:text="${project.siteNotes ?: '없음'}"></dd></dl></section>
-<p class="muted">실측·견적·일정·정산과 단계 변경은 후속 기능으로 준비 중입니다.</p>
-</main></html>
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout/base :: layout('현장 상세', ~{::main})}"
+>
+  <main>
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">PRJ-03 · PROJECT</p>
+        <h1 th:text="${project.name}"></h1>
+        <p>
+          <span
+            class="badge"
+            th:text="${project.statusLabel}"
+          ></span>
+          <a
+            th:href="@{/customers/{id}(id=${customer.id})}"
+            th:text="${customer.name}"
+          ></a>
+        </p>
+      </div>
+      <a
+        class="button secondary"
+        th:href="@{/projects/{id}/edit(id=${project.id})}"
+      >
+        정보 수정
+      </a>
+    </div>
+    <nav
+      class="tabs"
+      aria-label="현장 업무"
+    >
+      <a
+        class="active"
+        href="#details"
+      >
+        기본정보
+      </a>
+      <a th:href="@{/projects/{id}/survey(id=${project.id})}">실측</a>
+      <a th:href="@{/estimates}">견적</a>
+      <a th:href="@{/contracts}">계약</a>
+      <a th:href="@{/schedules}">일정</a>
+      <a th:href="@{/work-logs}">작업</a>
+      <a th:href="@{/payments}">정산</a>
+      <a th:href="@{/completion}">완료 점검</a>
+    </nav>
+    <section
+      class="panel"
+      id="details"
+    >
+      <h2>현장 기본정보</h2>
+      <dl class="details">
+        <dt>주소</dt>
+        <dd>
+          <span th:text="${project.address}"></span>
+          <span th:text="${project.detailAddress}"></span>
+        </dd>
+        <dt>공사 종류</dt>
+        <dd th:text="${project.constructionType}"></dd>
+        <dt>희망 시공일</dt>
+        <dd th:text="${project.desiredStartDate ?: '미정'}"></dd>
+        <dt>주거 유형</dt>
+        <dd th:text="${project.housingType ?: '미등록'}"></dd>
+        <dt>거주 여부</dt>
+        <dd th:text="${project.occupied ? '거주 중' : '공실'}"></dd>
+        <dt>주의사항</dt>
+        <dd
+          class="preserve-lines"
+          th:text="${project.siteNotes ?: '없음'}"
+        ></dd>
+      </dl>
+    </section>
+    <p class="muted">실측·견적·일정·정산과 단계 변경은 후속 기능으로 준비 중입니다.</p>
+  </main>
+</html>

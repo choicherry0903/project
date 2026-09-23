@@ -1,4 +1,5 @@
 package com.barunsigong.interior.config;
+
 import com.barunsigong.interior.auth.repository.StaffAccountRepository;
 import org.springframework.context.annotation.*;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -8,20 +9,52 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
-@Configuration @EnableMethodSecurity
+@Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
-    @Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
-    @Bean SecurityFilterChain filterChain(HttpSecurity http, StaffAccountRepository accounts) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login", "/css/**", "/js/**", "/error", "/favicon.ico").permitAll()
-            .requestMatchers("/settings/**").hasRole("ADMIN")
-            .requestMatchers("/mobile/**", "/notifications/**", "/").authenticated()
-            .requestMatchers("/dashboard", "/customers/**", "/projects/**", "/estimates/**", "/contracts/**",
-                "/schedules/**", "/work-logs/**", "/materials/**", "/purchase-orders/**", "/costs/**",
-                "/payments/**", "/completion/**", "/after-service/**").hasAnyRole("ADMIN", "OFFICE")
-            .anyRequest().denyAll())
-            .formLogin(form -> form.loginPage("/login").usernameParameter("email")
-                .failureUrl("/login?error").defaultSuccessUrl("/", true).permitAll())
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http, StaffAccountRepository accounts) throws Exception {
+        http.authorizeHttpRequests(auth ->
+            auth
+                .requestMatchers("/login", "/css/**", "/js/**", "/error", "/favicon.ico")
+                .permitAll()
+                .requestMatchers("/settings/**")
+                .hasRole("ADMIN")
+                .requestMatchers("/mobile/**", "/notifications/**", "/")
+                .authenticated()
+                .requestMatchers(
+                    "/dashboard",
+                    "/customers/**",
+                    "/projects/**",
+                    "/estimates/**",
+                    "/contracts/**",
+                    "/schedules/**",
+                    "/work-logs/**",
+                    "/materials/**",
+                    "/purchase-orders/**",
+                    "/costs/**",
+                    "/payments/**",
+                    "/completion/**",
+                    "/after-service/**"
+                )
+                .hasAnyRole("ADMIN", "OFFICE")
+                .anyRequest()
+                .denyAll()
+        )
+            .formLogin(form ->
+                form
+                    .loginPage("/login")
+                    .usernameParameter("email")
+                    .failureUrl("/login?error")
+                    .defaultSuccessUrl("/", true)
+                    .permitAll()
+            )
             .logout(logout -> logout.logoutSuccessUrl("/login?logout"))
             .addFilterBefore(new ActiveAccountFilter(accounts), AuthorizationFilter.class);
         return http.build();

@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('demo', 'mysql', 'mysql,prod')][string]$Profile = 'demo',
+    [ValidateSet('demo', 'mysql', 'mysql,shared', 'mysql,prod')][string]$Profile = 'demo',
     [ValidateSet('run', 'test', 'package')][string]$Task = 'run'
 )
 $ErrorActionPreference = 'Stop'

@@ -1,4 +1,5 @@
 package com.barunsigong.interior.completion.controller;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -7,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class CompletionController {
 
-    @GetMapping("/completion") public String index(Model model) {
-
-        model.addAttribute("screenId","QA-01");
-        model.addAttribute("title","완료 점검");
-        model.addAttribute("description","필수 점검, 미해결 이슈 검사, 관리자 완료 승인");
+    @GetMapping("/completion")
+    public String index(Model model) {
+        model.addAttribute("screenId", "QA-01");
+        model.addAttribute("title", "완료 점검");
+        model.addAttribute("description", "필수 점검, 미해결 이슈 검사, 관리자 완료 승인");
         return "completion/form";
     }
 }

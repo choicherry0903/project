@@ -1,0 +1,8 @@
+# Use with mysql: --spring.profiles.active=mysql,shared
+# Shared DB schema changes are applied by the DB owner, not every developer.
+spring:
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: validate

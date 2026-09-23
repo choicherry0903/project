@@ -1,4 +1,5 @@
 package com.barunsigong.interior.schedule.controller;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -7,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class ScheduleController {
 
-    @GetMapping("/schedules") public String index(Model model) {
-
-        model.addAttribute("screenId","SCH-01");
-        model.addAttribute("title","일정 캘린더");
-        model.addAttribute("description","월·주·목록 조회와 일정 유형별 필터");
+    @GetMapping("/schedules")
+    public String index(Model model) {
+        model.addAttribute("screenId", "SCH-01");
+        model.addAttribute("title", "일정 캘린더");
+        model.addAttribute("description", "월·주·목록 조회와 일정 유형별 필터");
         return "schedule/calendar";
     }
 }

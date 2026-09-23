@@ -1,10 +1,31 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(${title}, ~{::main})}">
-<main>
-  <div class="page-heading"><div><p class="eyebrow" th:text="${screenId}"></p><h1 th:text="${title}"></h1></div><span class="badge">개발 예정</span></div>
-  <section class="panel empty-state"><div class="empty-icon">＋</div><h2>화면 개발을 준비하고 있습니다</h2>
-    <p th:text="${description}"></p><p class="muted">현재는 화면 경로와 데이터 모델이 준비된 초기 프로젝트입니다.</p>
-    <a class="button secondary" th:href="@{/}">시작 화면으로</a>
-  </section>
-</main>
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout/base :: layout(${title}, ~{::main})}"
+>
+  <main>
+    <div class="page-heading">
+      <div>
+        <p
+          class="eyebrow"
+          th:text="${screenId}"
+        ></p>
+        <h1 th:text="${title}"></h1>
+      </div>
+      <span class="badge">개발 예정</span>
+    </div>
+    <section class="panel empty-state">
+      <div class="empty-icon">＋</div>
+      <h2>화면 개발을 준비하고 있습니다</h2>
+      <p th:text="${description}"></p>
+      <p class="muted">현재는 화면 경로와 데이터 모델이 준비된 초기 프로젝트입니다.</p>
+      <a
+        class="button secondary"
+        th:href="@{/}"
+      >
+        시작 화면으로
+      </a>
+    </section>
+  </main>
 </html>

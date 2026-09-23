@@ -1,4 +1,5 @@
 package com.barunsigong.interior.contract.controller;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -7,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class ContractController {
 
-    @GetMapping("/contracts") public String index(Model model) {
-
-        model.addAttribute("screenId","CON-01");
-        model.addAttribute("title","계약 기록");
-        model.addAttribute("description","확정 견적 연결, 동의 기록, 계약금·중도금·잔금 계획");
+    @GetMapping("/contracts")
+    public String index(Model model) {
+        model.addAttribute("screenId", "CON-01");
+        model.addAttribute("title", "계약 기록");
+        model.addAttribute("description", "확정 견적 연결, 동의 기록, 계약금·중도금·잔금 계획");
         return "contract/form";
     }
 }
