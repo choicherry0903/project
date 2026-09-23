@@ -1,4 +1,5 @@
 package com.barunsigong.interior.mobile.controller;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -7,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class MobileTaskController {
 
-    @GetMapping("/mobile/tasks") public String index(Model model) {
-
-        model.addAttribute("screenId","MOB-01");
-        model.addAttribute("title","오늘 작업");
-        model.addAttribute("description","본인에게 배정된 일정만 조회");
+    @GetMapping("/mobile/tasks")
+    public String index(Model model) {
+        model.addAttribute("screenId", "MOB-01");
+        model.addAttribute("title", "오늘 작업");
+        model.addAttribute("description", "본인에게 배정된 일정만 조회");
         return "mobile/tasks";
     }
 }

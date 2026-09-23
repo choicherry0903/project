@@ -1,4 +1,5 @@
 package com.barunsigong.interior.cost.controller;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -7,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class ProjectCostController {
 
-    @GetMapping("/costs") public String index(Model model) {
-
-        model.addAttribute("screenId","FIN-01");
-        model.addAttribute("title","비용과 예상 이익");
-        model.addAttribute("description","2차 기능: 비용 원장·증빙·정정 이력");
+    @GetMapping("/costs")
+    public String index(Model model) {
+        model.addAttribute("screenId", "FIN-01");
+        model.addAttribute("title", "비용과 예상 이익");
+        model.addAttribute("description", "2차 기능: 비용 원장·증빙·정정 이력");
         return "cost/list";
     }
 }

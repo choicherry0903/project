@@ -1,4 +1,5 @@
 package com.barunsigong.interior.material.controller;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -7,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class MaterialController {
 
-    @GetMapping("/materials") public String index(Model model) {
-
-        model.addAttribute("screenId","MAT-01");
-        model.addAttribute("title","자재 기준정보");
-        model.addAttribute("description","품명·품번·판매 단가·롤 기준 관리");
+    @GetMapping("/materials")
+    public String index(Model model) {
+        model.addAttribute("screenId", "MAT-01");
+        model.addAttribute("title", "자재 기준정보");
+        model.addAttribute("description", "품명·품번·판매 단가·롤 기준 관리");
         return "material/list";
     }
 }

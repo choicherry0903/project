@@ -1,4 +1,5 @@
 package com.barunsigong.interior.payment.controller;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -7,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class PaymentController {
 
-    @GetMapping("/payments") public String index(Model model) {
-
-        model.addAttribute("screenId","PAY-01");
-        model.addAttribute("title","입금 계획과 수금");
-        model.addAttribute("description","분할 입금·환불·취소 원장과 미수금 집계");
+    @GetMapping("/payments")
+    public String index(Model model) {
+        model.addAttribute("screenId", "PAY-01");
+        model.addAttribute("title", "입금 계획과 수금");
+        model.addAttribute("description", "분할 입금·환불·취소 원장과 미수금 집계");
         return "payment/list";
     }
 }

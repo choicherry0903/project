@@ -7,20 +7,55 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 /** 후속 기능의 데이터 모델. 변경 규칙은 해당 서비스 구현 시 적용합니다. */
-@Entity @Table(name = "materials")
+@Entity
+@Table(name = "materials")
 public class Material extends BaseEntity {
-    @Column(nullable = false, length = 50) private String category;
-    @Column(length = 100) private String brand;
-    @Column(nullable = false, length = 200) private String name;
-    @Column(length = 100) private String productCode;
-    @Column(length = 100) private String color;
-    @Column(nullable = false, length = 20) private String unit;
-    @Column(nullable = false) private Long sellingPrice;
-    @Column(precision = 12, scale = 2) private BigDecimal coveragePerRoll;
-    @Column(precision = 5, scale = 4) private BigDecimal wasteRate;
-    @Column(nullable = false) private boolean active;
+
+    @Column(nullable = false, length = 50)
+    private String category;
+
+    @Column(length = 100)
+    private String brand;
+
+    @Column(nullable = false, length = 200)
+    private String name;
+
+    @Column(length = 100)
+    private String productCode;
+
+    @Column(length = 100)
+    private String color;
+
+    @Column(nullable = false, length = 20)
+    private String unit;
+
+    @Column(nullable = false)
+    private Long sellingPrice;
+
+    @Column(precision = 12, scale = 2)
+    private BigDecimal coveragePerRoll;
+
+    @Column(precision = 5, scale = 4)
+    private BigDecimal wasteRate;
+
+    @Column(nullable = false)
+    private boolean active;
+
     protected Material() {}
-    public Material(Long companyId, String category, String brand, String name, String productCode, String color, String unit, Long sellingPrice, BigDecimal coveragePerRoll, BigDecimal wasteRate, boolean active) {
+
+    public Material(
+        Long companyId,
+        String category,
+        String brand,
+        String name,
+        String productCode,
+        String color,
+        String unit,
+        Long sellingPrice,
+        BigDecimal coveragePerRoll,
+        BigDecimal wasteRate,
+        boolean active
+    ) {
         super(companyId);
         this.category = category;
         this.brand = brand;
@@ -33,14 +68,44 @@ public class Material extends BaseEntity {
         this.wasteRate = wasteRate;
         this.active = active;
     }
-    public String getCategory() { return category; }
-    public String getBrand() { return brand; }
-    public String getName() { return name; }
-    public String getProductCode() { return productCode; }
-    public String getColor() { return color; }
-    public String getUnit() { return unit; }
-    public Long getSellingPrice() { return sellingPrice; }
-    public BigDecimal getCoveragePerRoll() { return coveragePerRoll; }
-    public BigDecimal getWasteRate() { return wasteRate; }
-    public boolean isActive() { return active; }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public Long getSellingPrice() {
+        return sellingPrice;
+    }
+
+    public BigDecimal getCoveragePerRoll() {
+        return coveragePerRoll;
+    }
+
+    public BigDecimal getWasteRate() {
+        return wasteRate;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
 }

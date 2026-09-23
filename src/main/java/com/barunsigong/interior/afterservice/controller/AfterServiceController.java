@@ -1,4 +1,5 @@
 package com.barunsigong.interior.afterservice.controller;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -7,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class AfterServiceController {
 
-    @GetMapping("/after-service") public String index(Model model) {
-
-        model.addAttribute("screenId","AS-01");
-        model.addAttribute("title","A/S 접수");
-        model.addAttribute("description","2차 기능: 완료 현장의 하자 접수와 처리 이력");
+    @GetMapping("/after-service")
+    public String index(Model model) {
+        model.addAttribute("screenId", "AS-01");
+        model.addAttribute("title", "A/S 접수");
+        model.addAttribute("description", "2차 기능: 완료 현장의 하자 접수와 처리 이력");
         return "afterservice/list";
     }
 }

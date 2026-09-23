@@ -1,12 +1,121 @@
-<!DOCTYPE html><html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout('고객 정보', ~{::main})}"><main>
-<div class="page-heading"><div><p class="eyebrow">CUS-02 · CUSTOMER DETAILS</p><h1 th:text="${customerId == null ? '고객 등록' : '고객 수정'}"></h1></div></div>
-<form class="panel edit-form" data-dirty-check th:action="${customerId == null} ? @{/customers} : @{/customers/{id}(id=${customerId})}" th:object="${form}" method="post">
-<div class="notice error" role="alert" tabindex="-1" th:if="${#fields.hasAnyErrors()}"><p th:each="error : ${#fields.allErrors()}" th:text="${error}"></p></div>
-<input type="hidden" th:field="*{version}"><input type="hidden" th:field="*{requestKey}">
-<div class="form-grid"><div><label for="name">고객명 *</label><input id="name" th:field="*{name}" required minlength="2" maxlength="50" placeholder="2~50자"><small class="field-error" th:errors="*{name}"></small></div>
-<div><label for="phone">연락처 *</label><input id="phone" th:field="*{phone}" type="tel" required maxlength="20" placeholder="010-0000-0000"><small class="field-error" th:errors="*{phone}"></small></div>
-<div><label for="source">유입 경로</label><input id="source" th:field="*{source}" maxlength="100" placeholder="지인 소개, 온라인 문의 등"></div></div>
-<label for="memo">상담 메모</label><textarea id="memo" th:field="*{memo}" maxlength="2000" rows="5" placeholder="상담 내용을 기록하세요."></textarea>
-<label class="checkbox"><input type="checkbox" th:field="*{allowDuplicate}">같은 연락처의 기존 고객을 확인했으며 별도 고객으로 등록합니다.</label><p class="muted"><a th:href="@{/customers(keyword=${form.phone})}" target="_blank" rel="noopener">기존 고객 검색</a></p>
-<div class="form-actions"><a class="button secondary" th:href="@{/customers}">취소</a><button class="button" type="submit">고객 저장</button></div>
-</form></main></html>
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout/base :: layout('고객 정보', ~{::main})}"
+>
+  <main>
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">CUS-02 · CUSTOMER DETAILS</p>
+        <h1 th:text="${customerId == null ? '고객 등록' : '고객 수정'}"></h1>
+      </div>
+    </div>
+    <form
+      class="panel edit-form"
+      data-dirty-check
+      th:action="${customerId == null} ? @{/customers} : @{/customers/{id}(id=${customerId})}"
+      th:object="${form}"
+      method="post"
+    >
+      <div
+        class="notice error"
+        role="alert"
+        tabindex="-1"
+        th:if="${#fields.hasAnyErrors()}"
+      >
+        <p
+          th:each="error : ${#fields.allErrors()}"
+          th:text="${error}"
+        ></p>
+      </div>
+      <input
+        type="hidden"
+        th:field="*{version}"
+      />
+      <input
+        type="hidden"
+        th:field="*{requestKey}"
+      />
+      <div class="form-grid">
+        <div>
+          <label for="name">고객명 *</label>
+          <input
+            id="name"
+            th:field="*{name}"
+            required
+            minlength="2"
+            maxlength="50"
+            placeholder="2~50자"
+          />
+          <small
+            class="field-error"
+            th:errors="*{name}"
+          ></small>
+        </div>
+        <div>
+          <label for="phone">연락처 *</label>
+          <input
+            id="phone"
+            th:field="*{phone}"
+            type="tel"
+            required
+            maxlength="20"
+            placeholder="010-0000-0000"
+          />
+          <small
+            class="field-error"
+            th:errors="*{phone}"
+          ></small>
+        </div>
+        <div>
+          <label for="source">유입 경로</label>
+          <input
+            id="source"
+            th:field="*{source}"
+            maxlength="100"
+            placeholder="지인 소개, 온라인 문의 등"
+          />
+        </div>
+      </div>
+      <label for="memo">상담 메모</label>
+      <textarea
+        id="memo"
+        th:field="*{memo}"
+        maxlength="2000"
+        rows="5"
+        placeholder="상담 내용을 기록하세요."
+      ></textarea>
+      <label class="checkbox">
+        <input
+          type="checkbox"
+          th:field="*{allowDuplicate}"
+        />
+        같은 연락처의 기존 고객을 확인했으며 별도 고객으로 등록합니다.
+      </label>
+      <p class="muted">
+        <a
+          th:href="@{/customers(keyword=${form.phone})}"
+          target="_blank"
+          rel="noopener"
+        >
+          기존 고객 검색
+        </a>
+      </p>
+      <div class="form-actions">
+        <a
+          class="button secondary"
+          th:href="@{/customers}"
+        >
+          취소
+        </a>
+        <button
+          class="button"
+          type="submit"
+        >
+          고객 저장
+        </button>
+      </div>
+    </form>
+  </main>
+</html>

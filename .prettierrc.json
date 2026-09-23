@@ -1,0 +1,26 @@
+{
+  "printWidth": 120,
+  "tabWidth": 4,
+  "singleQuote": true,
+  "overrides": [
+    {
+      "files": ["*.html", "*.css", "*.xml", "*.yml", "*.yaml", "*.json"],
+      "options": {
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": "*.html",
+      "options": {
+        "singleAttributePerLine": true,
+        "htmlWhitespaceSensitivity": "ignore"
+      }
+    },
+    {
+      "files": "*.xml",
+      "options": {
+        "xmlWhitespaceSensitivity": "ignore"
+      }
+    }
+  ]
+}

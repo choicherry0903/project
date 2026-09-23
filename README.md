@@ -70,8 +70,8 @@ docker compose up -d mysql
 `DB_URL`을 지정하면 원격 호스트/포트/DB 이름을 바꿀 수 있습니다.
 예: `jdbc:mysql://localhost:3306/interior_cms?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&characterEncoding=UTF-8`
 
-`.env`는 Docker Compose와 실행 스크립트에서 읽습니다. **Spring Boot가 직접 자동으로 읽지는 않습니다.**
-IntelliJ에서 실행한다면 Run Configuration의 환경 변수에 `DB_PASSWORD`, `DB_USERNAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`를 넣으세요.
+`.env`는 Docker Compose와 실행 스크립트가 읽으며, Spring Boot의 `mysql` 프로필도 작업 디렉터리의 `.env`를 가져옵니다.
+IntelliJ 실행 작업 디렉터리를 프로젝트 루트로 지정하세요. 운영체제 환경변수로도 설정할 수 있습니다.
 DB에 계정이 없는 최초 실행에만 관리자 계정을 생성합니다. 비밀번호는 12자 이상이며 BCrypt로 저장됩니다.
 기존 계정의 비밀번호는 환경 변수로 덮어쓰지 않습니다.
 
@@ -134,6 +134,9 @@ docs/                        화면 매핑·구조·원본 텍스트
 `prod`는 Secure 세션 쿠키를 켜므로 HTTP 로컬 테스트는 `mysql` 또는 `demo`로 실행합니다.
 
 ## 다음 개발
+
+다른 장소의 개발자와 DB를 공유할 때는 [VPN 공유 개발 DB 안내](docs/shared-development-db.md)를 따르세요.
+`Interior CMS Shared DB` 실행 설정 또는 `mysql,shared` 프로필을 사용합니다.
 
 [화면별 구현 범위와 순서](docs/screen-map.md), [아키텍처와 데이터 관계](docs/architecture.md)를 기준으로 이어서 개발할 수 있습니다.
 첨부·PDF·견적 확정·수금·작업자 배정·상태 전이·감사 기록은 아직 운영 가능한 기능이 아닙니다.

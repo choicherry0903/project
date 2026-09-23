@@ -1,8 +1,94 @@
-<!DOCTYPE html><html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout('대시보드', ~{::main})}">
-<main><div class="page-heading"><div><p class="eyebrow">DASH-01 · DASHBOARD</p><h1>오늘의 업무</h1><p class="muted" th:text="${today}"></p></div><a class="button" th:href="@{/customers/new}">＋ 고객 등록</a></div>
-  <div class="stats"><a class="stat" th:href="@{/customers}"><span>전체 고객</span><strong th:text="${customerCount} + '명'">0명</strong><small>고객·상담 확인 →</small></a><a class="stat" th:href="@{/projects}"><span>등록 현장</span><strong th:text="${projectCount} + '건'">0건</strong><small>현장 확인 →</small></a><div class="stat"><span>오늘 일정 / 미수금</span><strong>—</strong><small>일정·수금 기능 연결 예정</small></div></div>
-  <section class="panel"><div class="section-heading"><h2>최근 현장</h2><a th:href="@{/projects}">전체 보기 →</a></div>
-    <div th:if="${#lists.isEmpty(recentProjects)}" class="empty-state"><div class="empty-icon">＋</div><h2>첫 고객부터 시작해 보세요</h2><p>고객을 등록하고 공사를 진행할 현장을 연결하세요.</p><a class="button" th:href="@{/customers/new}">첫 고객 등록</a></div>
-    <table th:unless="${#lists.isEmpty(recentProjects)}"><thead><tr><th>현장</th><th>상태</th><th>희망 시공일</th></tr></thead><tbody><tr th:each="project : ${recentProjects}"><td><a th:href="@{/projects/{id}(id=${project.id})}" th:text="${project.name}"></a></td><td><span class="badge" th:text="${project.statusLabel}"></span></td><td th:text="${project.desiredStartDate ?: '미정'}"></td></tr></tbody></table>
-  </section>
-</main></html>
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout/base :: layout('대시보드', ~{::main})}"
+>
+  <main>
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">DASH-01 · DASHBOARD</p>
+        <h1>오늘의 업무</h1>
+        <p
+          class="muted"
+          th:text="${today}"
+        ></p>
+      </div>
+      <a
+        class="button"
+        th:href="@{/customers/new}"
+      >
+        ＋ 고객 등록
+      </a>
+    </div>
+    <div class="stats">
+      <a
+        class="stat"
+        th:href="@{/customers}"
+      >
+        <span>전체 고객</span>
+        <strong th:text="${customerCount} + '명'">0명</strong>
+        <small>고객·상담 확인 →</small>
+      </a>
+      <a
+        class="stat"
+        th:href="@{/projects}"
+      >
+        <span>등록 현장</span>
+        <strong th:text="${projectCount} + '건'">0건</strong>
+        <small>현장 확인 →</small>
+      </a>
+      <div class="stat">
+        <span>오늘 일정 / 미수금</span>
+        <strong>—</strong>
+        <small>일정·수금 기능 연결 예정</small>
+      </div>
+    </div>
+    <section class="panel">
+      <div class="section-heading">
+        <h2>최근 현장</h2>
+        <a th:href="@{/projects}">전체 보기 →</a>
+      </div>
+      <div
+        th:if="${#lists.isEmpty(recentProjects)}"
+        class="empty-state"
+      >
+        <div class="empty-icon">＋</div>
+        <h2>첫 고객부터 시작해 보세요</h2>
+        <p>고객을 등록하고 공사를 진행할 현장을 연결하세요.</p>
+        <a
+          class="button"
+          th:href="@{/customers/new}"
+        >
+          첫 고객 등록
+        </a>
+      </div>
+      <table th:unless="${#lists.isEmpty(recentProjects)}">
+        <thead>
+          <tr>
+            <th>현장</th>
+            <th>상태</th>
+            <th>희망 시공일</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="project : ${recentProjects}">
+            <td>
+              <a
+                th:href="@{/projects/{id}(id=${project.id})}"
+                th:text="${project.name}"
+              ></a>
+            </td>
+            <td>
+              <span
+                class="badge"
+                th:text="${project.statusLabel}"
+              ></span>
+            </td>
+            <td th:text="${project.desiredStartDate ?: '미정'}"></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</html>
