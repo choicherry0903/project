@@ -1,0 +1,13 @@
+<!DOCTYPE html><html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout('현장 정보', ~{::main})}"><main>
+<div class="page-heading"><div><p class="eyebrow">PRJ-02 · PROJECT DETAILS</p><h1 th:text="${projectId == null ? '현장 등록' : '현장 수정'}"></h1></div></div>
+<form class="panel edit-form" data-dirty-check th:action="${projectId == null} ? @{/projects} : @{/projects/{id}(id=${projectId})}" th:object="${form}" method="post">
+<div class="notice error" role="alert" tabindex="-1" th:if="${#fields.hasAnyErrors()}"><p th:each="error : ${#fields.allErrors()}" th:text="${error}"></p></div>
+<input type="hidden" th:field="*{version}"><input type="hidden" th:field="*{requestKey}">
+<div class="notice" th:if="${#lists.isEmpty(customers)}">현장 등록 전에 <a th:href="@{/customers/new}">고객을 먼저 등록</a>해 주세요.</div>
+<div class="form-grid"><div><label for="customerId">고객 *</label><select id="customerId" th:field="*{customerId}" required><option value="">고객 선택</option><option th:each="customer : ${customers}" th:value="${customer.id}" th:text="${customer.name} + ' / ' + ${customer.maskedPhone}"></option></select></div><div><label for="name">현장명 *</label><input id="name" th:field="*{name}" required minlength="2" maxlength="100" placeholder="아파트명, 동·호수 등"></div>
+<div><label for="address">주소 *</label><input id="address" th:field="*{address}" required maxlength="200"></div><div><label for="detailAddress">상세 주소</label><input id="detailAddress" th:field="*{detailAddress}" maxlength="200"></div>
+<div><label for="constructionType">공사 종류 *</label><select id="constructionType" th:field="*{constructionType}" required><option value="">선택</option><option value="도배">도배</option><option value="장판">장판</option><option value="도배·장판">도배·장판</option><option value="인테리어">인테리어</option><option value="기타">기타</option></select></div><div><label for="desiredStartDate">희망 시공일</label><input id="desiredStartDate" type="date" th:field="*{desiredStartDate}"><small class="muted">실제 배정 일정과 별도로 저장합니다.</small></div>
+<div><label for="housingType">주거 유형</label><input id="housingType" th:field="*{housingType}" maxlength="50" placeholder="아파트, 빌라, 주택 등"></div><div><label class="checkbox"><input type="checkbox" th:field="*{occupied}">거주 중인 현장</label></div></div>
+<label for="siteNotes">현장 주의사항</label><textarea id="siteNotes" th:field="*{siteNotes}" rows="4" maxlength="2000" placeholder="주차, 엘리베이터, 출입 및 반입 안내"></textarea>
+<div class="form-actions"><a class="button secondary" th:href="@{/projects}">취소</a><button class="button" type="submit" th:disabled="${#lists.isEmpty(customers)}">현장 저장</button></div>
+</form></main></html>

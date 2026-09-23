@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(pageTitle, content)">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${pageTitle} + ' | ' + ${companyName}">바른시공</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}"><script defer th:src="@{/js/app.js}"></script>
+</head>
+<body>
+<a class="skip-link" href="#content">본문으로 이동</a>
+<aside class="sidebar">
+  <a class="brand" th:href="@{/}"><span class="brand-mark">바</span><span th:text="${companyName}">바른시공</span></a>
+  <p class="nav-label">WORKSPACE</p>
+  <nav aria-label="주 메뉴" th:if="${!isWorker}">
+    <a th:href="@{/dashboard}">대시보드</a><a th:href="@{/customers}">고객·상담</a><a th:href="@{/projects}">현장</a>
+    <a th:href="@{/estimates}">견적·계약</a><a th:href="@{/schedules}">일정·작업</a><a th:href="@{/materials}">자재</a>
+    <a th:href="@{/payments}">비용·수금</a><a th:href="@{/after-service}">A/S</a><a th:if="${isAdmin}" th:href="@{/settings}">설정</a>
+  </nav>
+  <nav aria-label="작업 메뉴" th:if="${isWorker}"><a th:href="@{/mobile/tasks}">오늘 작업</a><a th:href="@{/notifications}">알림</a></nav>
+  <div class="sidebar-footer">도배·인테리어 관리시스템<br><small>초기 개발 버전</small></div>
+</aside>
+<div class="workspace">
+  <header class="topbar"><span>우리 현장의 모든 업무</span><div class="toolbar"><a th:href="@{/notifications}">알림</a><span th:text="${staffName}"></span><form th:action="@{/logout}" method="post"><button class="text-button" type="submit">로그아웃</button></form></div></header>
+  <div id="content" class="content"><div th:if="${success}" class="notice success" role="status" th:text="${success}"></div><th:block th:replace="${content}"></th:block></div>
+</div>
+</body>
+</html>

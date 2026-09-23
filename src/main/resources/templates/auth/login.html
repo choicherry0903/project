@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>로그인 | 바른시공</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="login-page"><main class="login-card">
+  <span class="brand-mark">바</span><p class="eyebrow">INTERIOR WORKSPACE</p><h1 th:text="${companyName}">바른시공</h1><p class="muted">상담부터 시공 완료까지, 한곳에서 관리하세요.</p>
+  <div class="notice error" th:if="${param.error}" role="alert">로그인 정보를 확인해 주세요.</div>
+  <div class="notice" th:if="${param.expired}">다시 로그인해 주세요.</div>
+  <div class="notice success" th:if="${param.logout}">로그아웃했습니다.</div>
+  <form th:action="@{/login}" method="post">
+    <label for="email">이메일 *</label><input id="email" name="email" type="email" required autocomplete="username" placeholder="이메일을 입력해 주세요" autofocus>
+    <label for="password">비밀번호 *</label><input id="password" name="password" type="password" required autocomplete="current-password" placeholder="비밀번호를 입력해 주세요">
+    <button class="button full-width" type="submit">로그인</button>
+  </form><p class="footnote">초대받은 직원만 로그인할 수 있습니다.<br>비밀번호 재설정은 관리자에게 요청해 주세요.</p>
+</main></body></html>
