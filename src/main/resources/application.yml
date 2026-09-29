@@ -28,8 +28,8 @@ server:
     include-stacktrace: never
 app:
   company-id: 1
-  company-name: 바른시공
+  company-name: 설기 시공
   zone-id: Asia/Seoul
   bootstrap:
-    email: ${ADMIN_EMAIL:}
+    username: ${ADMIN_USERNAME:${ADMIN_EMAIL:}}
     password: ${ADMIN_PASSWORD:}

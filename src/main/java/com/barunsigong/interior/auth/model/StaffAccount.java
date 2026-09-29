@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class StaffAccount extends BaseEntity {
 
     @Column(nullable = false, unique = true, length = 254)
-    private String email;
+    private String username;
 
     @Column(nullable = false, length = 100)
     private String passwordHash;
@@ -25,16 +25,16 @@ public class StaffAccount extends BaseEntity {
 
     protected StaffAccount() {}
 
-    public StaffAccount(Long companyId, String email, String passwordHash, String displayName, Role role) {
+    public StaffAccount(Long companyId, String username, String passwordHash, String displayName, Role role) {
         super(companyId);
-        this.email = email;
+        this.username = username;
         this.passwordHash = passwordHash;
         this.displayName = displayName;
         this.role = role;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
     public String getPasswordHash() {

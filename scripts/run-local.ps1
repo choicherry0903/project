@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('demo', 'supabase', 'supabase,shared', 'supabase,prod')][string]$Profile = 'supabase',
+    [ValidateSet('demo', 'demo,dev', 'supabase', 'supabase,dev', 'supabase,shared', 'supabase,shared,dev', 'supabase,prod')][string]$Profile = 'supabase,dev',
     [ValidateSet('run', 'test', 'package')][string]$Task = 'run'
 )
 $ErrorActionPreference = 'Stop'
@@ -44,10 +44,11 @@ try {
     if (-not $env:MAVEN_USER_HOME) { $env:MAVEN_USER_HOME = Join-Path $projectRoot '.m2' }
     $repository = '-Dmaven.repo.local=' + (Join-Path $projectRoot '.m2/repository')
     if ($Task -eq 'run') {
-        if ($Profile -ne 'demo' -and (-not $env:DB_PASSWORD -or $env:DB_PASSWORD.StartsWith('replace-'))) {
+        $isDemo = $Profile.Split(',') -contains 'demo'
+        if (-not $isDemo -and (-not $env:DB_PASSWORD -or $env:DB_PASSWORD.StartsWith('replace-'))) {
             throw '.env 또는 환경 변수에 실제 DB_PASSWORD를 설정해 주세요.'
         }
-        if ($Profile -ne 'demo' -and (-not $env:DB_URL -or -not $env:DB_URL.StartsWith('jdbc:postgresql://') -or -not $env:DB_USERNAME)) {
+        if (-not $isDemo -and (-not $env:DB_URL -or -not $env:DB_URL.StartsWith('jdbc:postgresql://') -or -not $env:DB_USERNAME)) {
             throw '.env에 Supabase DB_URL(jdbc:postgresql://)과 DB_USERNAME을 설정해 주세요.'
         }
         & ./mvnw.cmd $repository '-B' '-ntp' 'spring-boot:run' "-Dspring-boot.run.profiles=$Profile"

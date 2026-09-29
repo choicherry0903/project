@@ -14,9 +14,9 @@ public class StaffAccountService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) {
+    public UserDetails loadUserByUsername(String username) {
         return accounts
-            .findByEmailIgnoreCase(email.trim())
+            .findByUsernameIgnoreCase(username.trim())
             .map(StaffPrincipal::new)
             .orElseThrow(() -> new UsernameNotFoundException("로그인 정보를 확인해 주세요."));
     }

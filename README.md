@@ -30,7 +30,7 @@ Spring Boot 4 계열의 Java 25 지원은 [공식 발표](https://spring.io/blog
 ```
 
 - 접속: <http://localhost:8080>
-- 데모 이메일: `admin@example.test`
+- 데모 이메일: `admin`
 - 데모 비밀번호: `DemoAdmin!2026`
 - 필요하면 `DEMO_PASSWORD` 환경 변수로 비밀번호를 바꿀 수 있습니다.
 - 데모는 `127.0.0.1`에만 열리고 **프로세스 종료 시 데이터가 사라집니다**.
@@ -51,7 +51,7 @@ Supabase 프로젝트의 **Connect → Session pooler**에 표시되는 주소�
 
 1. 처음 설정하는 개발자는 `.env.example`을 `.env`로 복사합니다. 기존 `.env`는 덮어쓰지 않습니다.
 2. `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`를 자신의 Supabase 연결 정보로 채웁니다.
-3. 최초 웹 관리자용 `ADMIN_EMAIL`, `ADMIN_PASSWORD`(12자 이상)를 설정합니다.
+3. 최초 웹 관리자용 `ADMIN_USERNAME`, `ADMIN_PASSWORD`(12자 이상)를 설정합니다.
 4. 다음 명령으로 실행합니다.
 
 ```powershell
@@ -80,6 +80,20 @@ IntelliJ에서 JDK 25와 `demo` 프로필로 직접 실행하여 로그인 페�
 별도 외장 Tomcat 설정은 필요하지 않습니다. Supabase 연결 없이 화면만 확인하려면 `Interior CMS Demo`를 사용하세요.
 
 기존 IDE 설정과 Git 변경 사항은 보존했습니다. `.idea`, 로컬 비밀번호, Maven 캐시, 빌드 산출물은 Git 제외 대상입니다.
+
+## 개발 중 변경 자동 반영
+
+IntelliJ 공유 실행 구성은 `demo,dev` 또는 `supabase,dev`로 실행합니다. DevTools 의존성이 추가되었으므로 처음 한 번은 Maven 재동기화 후 실행 중인 앱을 다시 실행하세요.
+
+- HTML/CSS/JS: 원본 파일을 직접 읽고 캐시를 사용하지 않습니다. 저장 후 브라우저를 새로고침하면 반영됩니다.
+- Java: IntelliJ 자동 빌드로 클래스가 변경되면 DevTools가 애플리케이션을 자동 재시작합니다. 컴파일 오류가 없어야 반영됩니다.
+- YAML: 활성 프로필의 설정 파일이 빌드 출력에 복사되면 자동 재시작하여 다시 읽습니다. 환경 변수나 실행 인자 변경은 실행 구성을 다시 시작해야 합니다.
+
+IntelliJ에서 **설정 → 빌드, 실행, 배포 → 컴파일러 → 프로젝트 자동 빌드**, **설정 → 고급 설정 → 컴파일러 → 애플리케이션 실행 중에도 자동 빌드 허용**을 켭니다. 다른 개발자의 IDE에서도 각각 설정해야 합니다. 저장 후 잠시 기다리거나 `Ctrl+F9`로 빌드할 수 있습니다.
+
+Java/YAML은 무중단 변경이 아니라 수동 중지·실행을 대신하는 자동 재시작입니다. 재시작 중에는 잠시 요청이 중단될 수 있습니다. `demo,dev`는 자동 재시작 시 H2 데이터를 유지하지만 JVM을 종료하면 데이터가 사라집니다.
+
+터미널에서는 `.\scripts\run-local.ps1 -Profile 'supabase,dev'` 또는 `-Profile 'demo,dev'`로 실행하세요. 스크립트 기본값은 `supabase,dev`입니다. 터미널 실행은 소스를 자동 컴파일하지 않으므로 Java/YAML 변경 후 별도 터미널에서 `.\mvnw.cmd compile`을 실행해야 합니다. 브라우저 자동 새로고침은 LiveReload 확장 기능이 필요하며, 일반 새로고침만으로도 사용할 수 있습니다. 배포할 때는 `dev` 프로필을 사용하지 않습니다.
 
 ## 구조
 
@@ -131,3 +145,5 @@ docs/                        화면 매핑·구조·원본 텍스트
 
 [화면별 구현 범위와 순서](docs/screen-map.md), [아키텍처와 데이터 관계](docs/architecture.md)를 기준으로 이어서 개발할 수 있습니다.
 첨부·PDF·견적 확정·수금·작업자 배정·상태 전이·감사 기록은 아직 운영 가능한 기능이 아닙니다.
+
+로그인은 이메일 형식 검증 없이 아이디(`username`)로 처리하며 대소문자를 구분하지 않습니다. V3 마이그레이션은 기존 계정 식별자와 BCrypt 해시를 보존합니다. 기존 이메일 형태의 식별자는 그대로 아이디로 사용할 수 있습니다. 기존 로컬 설정 호환을 위해 ADMIN_EMAIL도 대체값으로 지원합니다. 새 설정에는 ADMIN_USERNAME을 사용하세요.
