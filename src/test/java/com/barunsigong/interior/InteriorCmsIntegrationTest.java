@@ -42,7 +42,7 @@ class InteriorCmsIntegrationTest {
 
     @BeforeEach
     void principal() {
-        admin = new StaffPrincipal(accounts.findByEmailIgnoreCase("test-admin@example.test").orElseThrow());
+        admin = new StaffPrincipal(accounts.findByUsernameIgnoreCase("test-admin").orElseThrow());
     }
 
     @Test
@@ -50,22 +50,28 @@ class InteriorCmsIntegrationTest {
         mvc.perform(get("/customers")).andExpect(status().is3xxRedirection());
         mvc.perform(get("/login"))
             .andExpect(status().isOk())
-            .andExpect(content().string(org.hamcrest.Matchers.containsString("이메일")));
+            .andExpect(content().string(org.hamcrest.Matchers.containsString("아이디")));
         mvc.perform(post("/customers").with(user(admin))).andExpect(status().isForbidden());
     }
 
     @Test
     void databasePasswordAuthenticationWorks() throws Exception {
+        assertThat(accounts.findByUsernameIgnoreCase("test-admin").orElseThrow().getPasswordHash())
+            .startsWith("$2a$")
+            .isNotEqualTo("TestOnlyPassword!2026");
         mvc.perform(
             post("/login")
                 .with(csrf())
-                .param("email", "test-admin@example.test")
+                .param("username", "test-admin")
                 .param("password", "TestOnlyPassword!2026")
         )
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/"));
         mvc.perform(
-            post("/login").with(csrf()).param("email", "test-admin@example.test").param("password", "wrong")
+            post("/login").with(csrf()).param("username", "test-admin").param("password", "wrong")
+        ).andExpect(redirectedUrl("/login?error"));
+        mvc.perform(
+            post("/login").with(csrf()).param("email", "test-admin").param("password", "TestOnlyPassword!2026")
         ).andExpect(redirectedUrl("/login?error"));
     }
 

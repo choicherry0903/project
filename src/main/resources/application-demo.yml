@@ -15,5 +15,5 @@ server:
   address: 127.0.0.1
 app:
   bootstrap:
-    email: admin@example.test
+    username: admin
     password: ${DEMO_PASSWORD:DemoAdmin!2026}

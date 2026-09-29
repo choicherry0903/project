@@ -2,7 +2,7 @@
   <configuration default="false" name="Interior CMS Supabase" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.barunsigong.interior.InteriorCmsApplication" />
     <module name="interior-cms" />
-    <option name="PROGRAM_PARAMETERS" value="--spring.profiles.active=supabase" />
+    <option name="PROGRAM_PARAMETERS" value="--spring.profiles.active=supabase,dev" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <method v="2">
       <option name="Make" enabled="true" />

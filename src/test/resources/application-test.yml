@@ -10,5 +10,5 @@ spring:
     enabled: true
 app:
   bootstrap:
-    email: test-admin@example.test
+    username: test-admin
     password: TestOnlyPassword!2026

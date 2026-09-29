@@ -13,7 +13,7 @@ public class StaffPrincipal extends User {
 
     public StaffPrincipal(StaffAccount account) {
         super(
-            account.getEmail(),
+            account.getUsername(),
             account.getPasswordHash(),
             account.isActive(),
             true,
