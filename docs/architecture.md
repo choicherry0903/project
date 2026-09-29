@@ -13,7 +13,7 @@ flowchart LR
     Security --> Controller[Controller]
     Controller --> Service[Service: 업체 범위 및 정책]
     Service --> Repository[Repository]
-    Repository --> DB[(MySQL)]
+    Repository --> DB[(PostgreSQL)]
     Controller --> View[Thymeleaf View]
     View --> Browser
 ```
@@ -44,7 +44,7 @@ erDiagram
 
 - 모든 Entity에 `id`, `companyId`, `version`, `createdAt`, `updatedAt`을 둡니다.
 - 시간은 `Instant`와 UTC DB 연결을 사용합니다. 일정 화면 입력·출력 구현 시 `Asia/Seoul`로 변환하세요.
-- MySQL FK는 `(company_id, 참조ID)`로 연결하여 타 업체 데이터를 잘못 연결하지 못하게 합니다.
+- PostgreSQL FK는 `(company_id, 참조ID)`로 연결하여 타 업체 데이터를 잘못 연결하지 못하게 합니다.
 - JPA 모델은 참조 ID를 명시적으로 사용합니다. 관계 객체의 자동 로딩으로 권한 밖 데이터가 뷰에 노출되는 것을 피하고 서비스에서 범위를 검증합니다.
 - 현재 하나의 업체 ID를 초기 설정에서 생성 계정에 부여합니다. 멀티 업체 가입·전환 기능은 없습니다.
 - 금액은 `Long` 원 단위, 수량과 실측은 `BigDecimal`입니다.
@@ -69,4 +69,4 @@ erDiagram
 `V1__create_initial_schema.sql`에 23개 테이블과 업체 범위 FK가 있습니다.
 실제 DB에 적용한 이후에는 V1을 수정하지 말고 `V2__설명.sql` 등 다음 마이그레이션을 추가하세요.
 `demo`는 메모리 DB와 Hibernate 자동 생성이며, `test`는 동일 Flyway SQL을 적용합니다.
-운영은 Flyway 적용 후 JPA `validate`로 확인합니다. 실제 MySQL 검증은 연결 정보가 준비된 뒤 진행하세요.
+운영은 Flyway 적용 후 JPA `validate`로 확인합니다. 실제 PostgreSQL 검증은 연결 정보가 준비된 뒤 진행하세요.

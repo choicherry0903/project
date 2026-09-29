@@ -14,7 +14,7 @@
 | MVC View | Thymeleaf, HTML/CSS/JavaScript |
 | Model | Spring Data JPA, Hibernate, Jakarta Validation |
 | 인증 | Spring Security, 세션, BCrypt, CSRF |
-| 운영 DB | MySQL 8.4, utf8mb4 |
+| 운영 DB | Supabase PostgreSQL, Session pooler |
 | DB 변경 관리 | Flyway, `ddl-auto: validate` |
 | 로컬 화면 확인 | 명시적인 `demo` 프로필, 메모리 H2 |
 
@@ -44,36 +44,26 @@ $env:JAVA_HOME = 'C:\Program Files\Java\jdk-25.0.4.1' # 본인의 JDK 경로
 .\mvnw.cmd spring-boot:run '-Dspring-boot.run.profiles=demo'
 ```
 
-## MySQL 연결
+## Supabase 연결
 
-DB는 아직 생성하지 않았습니다. 다음 중 한 방법으로 DB를 준비하세요.
+Supabase 프로젝트의 **Connect → Session pooler**에 표시되는 주소를 사용합니다.
+현재 구성은 서울 리전의 세션 풀러(5432)이며 VPN이나 SSH 터널이 필요하지 않습니다.
 
-### Docker가 설치된 경우
+1. 처음 설정하는 개발자는 `.env.example`을 `.env`로 복사합니다. 기존 `.env`는 덮어쓰지 않습니다.
+2. `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`를 자신의 Supabase 연결 정보로 채웁니다.
+3. 최초 웹 관리자용 `ADMIN_EMAIL`, `ADMIN_PASSWORD`(12자 이상)를 설정합니다.
+4. 다음 명령으로 실행합니다.
 
 ```powershell
-Copy-Item .env.example .env
-# .env의 DB_PASSWORD, MYSQL_ROOT_PASSWORD, ADMIN_EMAIL, ADMIN_PASSWORD를 실제 값으로 수정
-docker compose up -d mysql
-.\scripts\run-local.ps1 -Profile mysql
+.\scripts\run-local.ps1 -Profile supabase
 ```
 
-`compose.yml`은 MySQL 8.4와 `interior_cms` DB·앱 전용 계정·영속 볼륨을 준비합니다.
-첫 볼륨 초기화 이후 `.env`의 비밀번호를 바꾸는 것만으로 DB 계정 비밀번호가 바뀌지는 않습니다.
+`supabase`가 기본 프로필입니다. Flyway가 `interior_cms` 스키마와 테이블을 만들고 JPA가 매핑을 검증합니다.
+비밀번호는 DB 연결용 비밀번호이며 Supabase API 키가 아닙니다. 비밀번호를 URL에 넣지 않습니다.
+`.env`는 Git에서 제외되며 실행 스크립트와 Spring Boot가 프로젝트 루트에서 읽습니다.
+최초 웹 관리자만 자동 생성하고, 기존 계정 비밀번호는 덮어쓰지 않습니다.
 
-### MySQL을 직접 설치한 경우
-
-1. [scripts/create-database.sql](scripts/create-database.sql)의 임시 비밀번호를 바꾸고 MySQL 관리자 계정으로 실행합니다.
-2. `.env.example`을 `.env`로 복사하여 실제 DB 계정·비밀번호와 최초 관리자 이메일·비밀번호를 입력합니다.
-3. `.\scripts\run-local.ps1 -Profile mysql`을 실행합니다.
-4. Flyway가 `V1__create_initial_schema.sql`을 한 번 적용하고 JPA가 스키마를 검증합니다.
-
-`DB_URL`을 지정하면 원격 호스트/포트/DB 이름을 바꿀 수 있습니다.
-예: `jdbc:mysql://localhost:3306/interior_cms?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&characterEncoding=UTF-8`
-
-`.env`는 Docker Compose와 실행 스크립트가 읽으며, Spring Boot의 `mysql` 프로필도 작업 디렉터리의 `.env`를 가져옵니다.
-IntelliJ 실행 작업 디렉터리를 프로젝트 루트로 지정하세요. 운영체제 환경변수로도 설정할 수 있습니다.
-DB에 계정이 없는 최초 실행에만 관리자 계정을 생성합니다. 비밀번호는 12자 이상이며 BCrypt로 저장됩니다.
-기존 계정의 비밀번호는 환경 변수로 덮어쓰지 않습니다.
+자세한 DataGrip·공동 개발 설정은 [Supabase DB 안내](docs/supabase-db.md)를 확인하세요.
 
 ## IntelliJ IDEA
 
@@ -81,13 +71,13 @@ DB에 계정이 없는 최초 실행에만 관리자 계정을 생성합니다. 
 2. Project SDK와 Maven Runner JRE를 **JDK 25**로 지정합니다.
 3. Maven 재동기화 후 공유 실행 구성 `Interior CMS Demo`를 실행합니다.
 4. 실행 구성이 모듈을 찾지 못하면 `Use classpath of module`에서 Maven 모듈 `interior-cms`를 선택합니다.
-5. MySQL 실행은 `InteriorCmsApplication`의 프로그램 인수 `--spring.profiles.active=mysql`과 위 환경 변수를 사용합니다.
+5. 실제 DB 실행은 `Interior CMS Supabase` 공유 실행 구성을 선택합니다.
 
 현재 IntelliJ 상단 실행 구성은 `Interior CMS Demo`로 선택해 두었습니다.
 오른쪽 초록색 ▶ 버튼(기본 단축키 `Shift+F10`)으로 실행하고, 실행 중 표시되는 빨간색 ■ 버튼으로 중지합니다.
 시작 로그가 표시되면 <http://localhost:8080>에 접속하세요. 로그는 하단 `실행` 창에서 확인합니다.
 IntelliJ에서 JDK 25와 `demo` 프로필로 직접 실행하여 로그인 페이지 HTTP 200 응답을 확인한 뒤 중지했습니다.
-별도 외장 Tomcat 설정은 필요하지 않습니다. MySQL DB가 준비되기 전에는 `Interior CMS Demo`를 사용하세요.
+별도 외장 Tomcat 설정은 필요하지 않습니다. Supabase 연결 없이 화면만 확인하려면 `Interior CMS Demo`를 사용하세요.
 
 기존 IDE 설정과 Git 변경 사항은 보존했습니다. `.idea`, 로컬 비밀번호, Maven 캐시, 빌드 산출물은 Git 제외 대상입니다.
 
@@ -107,12 +97,13 @@ src/main/java/com/barunsigong/interior/
   afterservice/ mobile/ notification/ setting/
   attachment/ audit/         파일 메타데이터·감사 이력 모델
 src/main/resources/
-  application*.yml            공통·MySQL·데모·운영 설정
+  application*.yml            공통·Supabase·데모·운영 설정
   templates/                 화면별 Thymeleaf View, 공통 레이아웃
   static/css/ static/js/      반응형 스타일·공통 폼 동작
   db/migration/              Flyway 초기 스키마
+  db/supabase/               Supabase API 접근 권한 제한
 src/test/                    금액·실측·일정 계산 및 MVC/DB 통합 테스트
-scripts/                     로컬 실행·DB 생성
+scripts/                     로컬 실행·테스트·빌드
 docs/                        화면 매핑·구조·원본 텍스트
 ```
 
@@ -126,17 +117,17 @@ docs/                        화면 매핑·구조·원본 텍스트
 .\scripts\run-local.ps1 -Task package
 ```
 
-테스트는 H2의 MySQL 호환 모드에서 **동일 Flyway SQL을 적용하고 JPA 매핑을 검증**합니다.
-실제 MySQL 서버 연결 검증은 DB 준비 후 별도로 필요합니다.
+테스트는 H2의 PostgreSQL 호환 모드에서 **공통 Flyway V1을 적용하고 JPA 매핑을 검증**합니다. Supabase 전용 V2 권한 설정은 실제 PostgreSQL에서 검증했습니다.
+실제 Supabase 연결·마이그레이션·앱 시작 검증 결과는 [검증 기록](docs/verification.md)에 정리합니다.
 패키징 결과: `target/interior-cms-0.0.1-SNAPSHOT.jar`.
 
-서버 배포 시에는 HTTPS 뒤에서 `SPRING_PROFILES_ACTIVE=mysql,prod`를 사용하세요.
-`prod`는 Secure 세션 쿠키를 켜므로 HTTP 로컬 테스트는 `mysql` 또는 `demo`로 실행합니다.
+서버 배포 시에는 HTTPS 뒤에서 `SPRING_PROFILES_ACTIVE=supabase,prod`를 사용하세요.
+`prod`는 Secure 세션 쿠키를 켜므로 HTTP 로컬 테스트는 `supabase` 또는 `demo`로 실행합니다.
 
 ## 다음 개발
 
-다른 장소의 개발자와 DB를 공유할 때는 [VPN 공유 개발 DB 안내](docs/shared-development-db.md)를 따르세요.
-`Interior CMS Shared DB` 실행 설정 또는 `mysql,shared` 프로필을 사용합니다.
+다른 장소의 개발자는 [Supabase DB 안내](docs/supabase-db.md)에 따라 연결합니다.
+스키마 변경은 담당자가 먼저 적용하고, 다른 개발자는 `supabase,shared` 프로필로 실행할 수 있습니다.
 
 [화면별 구현 범위와 순서](docs/screen-map.md), [아키텍처와 데이터 관계](docs/architecture.md)를 기준으로 이어서 개발할 수 있습니다.
 첨부·PDF·견적 확정·수금·작업자 배정·상태 전이·감사 기록은 아직 운영 가능한 기능이 아닙니다.

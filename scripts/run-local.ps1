@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('demo', 'mysql', 'mysql,shared', 'mysql,prod')][string]$Profile = 'demo',
+    [ValidateSet('demo', 'supabase', 'supabase,shared', 'supabase,prod')][string]$Profile = 'supabase',
     [ValidateSet('run', 'test', 'package')][string]$Task = 'run'
 )
 $ErrorActionPreference = 'Stop'
@@ -18,7 +18,16 @@ try {
         if (-not $jdk) { throw 'JDK 25를 설치하고 JAVA_HOME을 지정해 주세요.' }
         $env:JAVA_HOME = $jdk.FullName
     }
-    $javaVersion = & (Join-Path $env:JAVA_HOME 'bin/java.exe') -version 2>&1 | Out-String
+    # Windows PowerShell treats java -version's normal stderr output as an error.
+    $previousErrorAction = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $javaVersion = & (Join-Path $env:JAVA_HOME 'bin/java.exe') -version 2>&1 | Out-String
+        $javaExit = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousErrorAction
+    }
+    if ($javaExit -ne 0) { throw 'Java version check failed.' }
     if ($javaVersion -notmatch 'version "25[."]') { throw '이 프로젝트는 JDK 25로 실행해 주세요.' }
     # Parse plain KEY=VALUE only; never evaluate .env contents as shell code.
     if (Test-Path '.env') {
@@ -38,9 +47,8 @@ try {
         if ($Profile -ne 'demo' -and (-not $env:DB_PASSWORD -or $env:DB_PASSWORD.StartsWith('replace-'))) {
             throw '.env 또는 환경 변수에 실제 DB_PASSWORD를 설정해 주세요.'
         }
-        if (-not $env:DB_URL -and $env:DB_NAME) {
-            if ($env:DB_NAME -notmatch '^[A-Za-z0-9_]+$') { throw 'DB_NAME은 영문·숫자·밑줄만 허용합니다.' }
-            $env:DB_URL = 'jdbc:mysql://localhost:3306/' + $env:DB_NAME + '?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&characterEncoding=UTF-8'
+        if ($Profile -ne 'demo' -and (-not $env:DB_URL -or -not $env:DB_URL.StartsWith('jdbc:postgresql://') -or -not $env:DB_USERNAME)) {
+            throw '.env에 Supabase DB_URL(jdbc:postgresql://)과 DB_USERNAME을 설정해 주세요.'
         }
         & ./mvnw.cmd $repository '-B' '-ntp' 'spring-boot:run' "-Dspring-boot.run.profiles=$Profile"
     } else {
