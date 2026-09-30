@@ -6,4 +6,6 @@ server:
 spring:
   thymeleaf:
     cache: true
+app:
+  public-base-url: ${APP_PUBLIC_BASE_URL}
 # Run with SPRING_PROFILES_ACTIVE=supabase,prod behind HTTPS.

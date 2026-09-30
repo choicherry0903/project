@@ -493,6 +493,62 @@ textarea {
   color: var(--muted);
   margin: 24px 0 0;
 }
+.auth-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 18px;
+}
+.auth-actions button {
+  background: none;
+  border: 0;
+  color: var(--green);
+  cursor: pointer;
+  padding: 10px 7px;
+  font-size: 13px;
+}
+.auth-actions button:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.auth-panel {
+  border-top: 1px solid var(--line);
+  margin-top: 20px;
+  padding-top: 24px;
+}
+.auth-panel[hidden] {
+  display: none;
+}
+.auth-panel h2 {
+  margin-bottom: 0;
+}
+.auth-panel form {
+  margin-top: 20px;
+}
+.auth-inline {
+  display: flex;
+  gap: 8px;
+}
+.auth-inline input {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 6px;
+}
+.auth-inline button {
+  align-self: flex-start;
+  padding-inline: 12px;
+}
+.auth-feedback {
+  min-height: 20px;
+  margin: 0 0 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.auth-resend {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
 
 /* 접근성 */
 .sr-only,

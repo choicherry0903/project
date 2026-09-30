@@ -27,6 +27,7 @@ public class ActiveAccountFilter extends OncePerRequestFilter {
                 .filter(
                     a ->
                         a.isActive() &&
+                        (a.getEmail() == null || a.getEmailVerifiedAt() != null) &&
                         a.getCompanyId().equals(principal.getCompanyId()) &&
                         principal
                             .getAuthorities()
