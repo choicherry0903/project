@@ -1,10 +1,10 @@
 package com.barunsigong.interior;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.mockito.Mockito.*;
 
 import com.barunsigong.interior.auth.model.*;
 import com.barunsigong.interior.auth.repository.StaffAccountRepository;
@@ -16,14 +16,14 @@ import com.barunsigong.interior.customer.repository.CustomerRepository;
 import com.barunsigong.interior.project.repository.ConstructionProjectRepository;
 import java.util.UUID;
 import org.junit.jupiter.api.*;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.mockito.ArgumentCaptor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -55,6 +55,136 @@ class InteriorCmsIntegrationTest {
 
     StaffPrincipal admin;
 
+    @Autowired
+    com.barunsigong.interior.material.repository.MaterialRepository materials;
+
+    @Test
+    void materialCrudAndClassificationValidation() throws Exception {
+        mvc.perform(get("/materials").with(user(admin)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(org.hamcrest.Matchers.containsString("/materials/new")))
+            .andExpect(content().string(org.hamcrest.Matchers.containsString("2뎁스 전체")));
+        mvc.perform(get("/materials/new").with(user(admin)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(org.hamcrest.Matchers.containsString("600X600")))
+            .andExpect(content().string(org.hamcrest.Matchers.containsString("싱크볼")))
+            .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<optgroup"))));
+        mvc.perform(
+            post("/materials")
+                .with(user(admin))
+                .with(csrf())
+                .param("category", "ENTRANCE")
+                .param("subcategory", "FLOOR_TILE")
+                .param("name", "피에트라 그레이")
+                .param("brand", "예림")
+                .param("size", "600X600")
+                .param("color", "그레이")
+        ).andExpect(redirectedUrlPattern("/materials/*"));
+        var material = materials
+            .findAll()
+            .stream()
+            .filter(m -> "피에트라 그레이".equals(m.getName()))
+            .findFirst()
+            .orElseThrow();
+        assertThat(material.getSize()).isEqualTo("600X600");
+        mvc.perform(get("/materials").with(user(admin)))
+            .andExpect(status().isOk())
+            .andExpect(
+                content().string(org.hamcrest.Matchers.containsString("href=\"/materials/" + material.getId() + "\""))
+            )
+            .andExpect(
+                content().string(
+                    org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("data-material-delete"))
+                )
+            )
+            .andExpect(
+                content().string(
+                    org.hamcrest.Matchers.not(
+                        org.hamcrest.Matchers.containsString("/materials/" + material.getId() + "/edit")
+                    )
+                )
+            );
+        mvc.perform(get("/materials/" + material.getId()).with(user(admin)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(org.hamcrest.Matchers.containsString("data-material-delete")))
+            .andExpect(
+                content().string(org.hamcrest.Matchers.containsString("/materials/" + material.getId() + "/edit"))
+            );
+        mvc.perform(get("/materials/" + material.getId() + "/edit").with(user(admin))).andExpect(status().isOk());
+        mvc.perform(
+            post("/materials/" + material.getId())
+                .with(user(admin))
+                .with(csrf())
+                .param("version", String.valueOf(material.getVersion()))
+                .param("category", "ENTRANCE")
+                .param("subcategory", "SINK")
+                .param("name", "콰이어트860")
+                .param("brand", "백조")
+        ).andExpect(redirectedUrl("/materials/" + material.getId()));
+        assertThat(materials.findById(material.getId()).orElseThrow().getName()).isEqualTo("콰이어트860");
+        assertThat(material.getSubcategoryLabel()).isEqualTo("싱크볼");
+        mvc.perform(get("/materials").with(user(admin)).param("subcategory", "SINK"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(org.hamcrest.Matchers.containsString("콰이어트860")));
+        mvc.perform(get("/materials").with(user(admin)).param("subcategory", "FLOOR_TILE"))
+            .andExpect(status().isOk())
+            .andExpect(
+                content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("콰이어트860")))
+            );
+        mvc.perform(
+            post("/materials")
+                .with(user(admin))
+                .with(csrf())
+                .param("category", "ENTRANCE")
+                .param("subcategory", "UNKNOWN")
+                .param("name", "잘못된 분류")
+        )
+            .andExpect(status().isOk())
+            .andExpect(model().attributeHasErrors("form"));
+        mvc.perform(post("/materials/" + material.getId() + "/delete").with(user(admin))).andExpect(
+            status().isForbidden()
+        );
+        mvc.perform(
+            post("/materials/" + material.getId() + "/delete")
+                .with(user(admin))
+                .with(csrf())
+                .param("version", String.valueOf(material.getVersion()))
+        ).andExpect(redirectedUrl("/materials"));
+        assertThat(materials.findById(material.getId())).isEmpty();
+    }
+
+    @Test
+    void materialAccessIsScopedToCompany() throws Exception {
+        var foreign = materials.saveAndFlush(
+            new com.barunsigong.interior.material.model.Material(
+                9999L,
+                "ENTRANCE",
+                null,
+                "다른 회사 자재",
+                null,
+                null,
+                "개",
+                0L,
+                null,
+                null,
+                true
+            )
+        );
+        mvc.perform(get("/materials/" + foreign.getId() + "/edit").with(user(admin))).andExpect(status().isNotFound());
+        mvc.perform(get("/materials/" + foreign.getId()).with(user(admin))).andExpect(status().isNotFound());
+        mvc.perform(
+            post("/materials/" + foreign.getId() + "/delete")
+                .with(user(admin))
+                .with(csrf())
+                .param("version", "0")
+        ).andExpect(status().isNotFound());
+        mvc.perform(get("/materials").with(user(admin)))
+            .andExpect(status().isOk())
+            .andExpect(
+                content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("다른 회사 자재")))
+            );
+    }
+
     @BeforeEach
     void principal() {
         admin = new StaffPrincipal(accounts.findByUsernameIgnoreCase("test-admin").orElseThrow());
@@ -75,16 +205,13 @@ class InteriorCmsIntegrationTest {
             .startsWith("$2a$")
             .isNotEqualTo("TestOnlyPassword!2026");
         mvc.perform(
-            post("/login")
-                .with(csrf())
-                .param("username", "test-admin")
-                .param("password", "TestOnlyPassword!2026")
+            post("/login").with(csrf()).param("username", "test-admin").param("password", "TestOnlyPassword!2026")
         )
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/"));
-        mvc.perform(
-            post("/login").with(csrf()).param("username", "test-admin").param("password", "wrong")
-        ).andExpect(redirectedUrl("/login?error"));
+        mvc.perform(post("/login").with(csrf()).param("username", "test-admin").param("password", "wrong")).andExpect(
+            redirectedUrl("/login?error")
+        );
         mvc.perform(
             post("/login").with(csrf()).param("email", "test-admin").param("password", "TestOnlyPassword!2026")
         ).andExpect(redirectedUrl("/login?error"));
@@ -95,19 +222,24 @@ class InteriorCmsIntegrationTest {
         mvc.perform(get("/auth/check-username").param("username", "newstaff"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.available").value(true));
-        mvc.perform(post("/auth/register").with(csrf())
-            .param("name", "홍길동").param("phone", "010-1234-5678")
-            .param("email", "staff@example.test")
-            .param("username", "newstaff").param("password", "initial-pass"))
-            .andExpect(status().isOk());
+        mvc.perform(
+            post("/auth/register")
+                .with(csrf())
+                .param("name", "홍길동")
+                .param("phone", "010-1234-5678")
+                .param("email", "staff@example.test")
+                .param("username", "newstaff")
+                .param("password", "initial-pass")
+        ).andExpect(status().isOk());
         var account = accounts.findByUsernameIgnoreCase("newstaff").orElseThrow();
         assertThat(account.getPhone()).isEqualTo("01012345678");
         assertThat(account.getEmail()).isEqualTo("staff@example.test");
         assertThat(account.getEmailVerifiedAt()).isNull();
         assertThat(account.getRole()).isEqualTo(Role.OFFICE);
         assertThat(encoder.matches("initial-pass", account.getPasswordHash())).isTrue();
-        mvc.perform(post("/login").with(csrf()).param("username", "newstaff").param("password", "initial-pass"))
-            .andExpect(redirectedUrl("/login?error"));
+        mvc.perform(
+            post("/login").with(csrf()).param("username", "newstaff").param("password", "initial-pass")
+        ).andExpect(redirectedUrl("/login?error"));
         ArgumentCaptor<String> link = ArgumentCaptor.forClass(String.class);
         verify(verificationEmailSender).send(org.mockito.ArgumentMatchers.eq("staff@example.test"), link.capture());
         String token = link.getValue().substring(link.getValue().indexOf("token=") + 6);
@@ -118,82 +250,124 @@ class InteriorCmsIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(content().string(org.hamcrest.Matchers.containsString("이메일 확인이 완료")));
         assertThat(account.getEmailVerifiedAt()).isNotNull();
-        mvc.perform(post("/auth/verify-email").with(csrf()).param("token", token))
-            .andExpect(content().string(org.hamcrest.Matchers.containsString("이미 사용")));
-        mvc.perform(post("/login").with(csrf()).param("username", "newstaff").param("password", "initial-pass"))
-            .andExpect(redirectedUrl("/"));
-        mvc.perform(get("/auth/check-username").param("username", "NEWSTAFF"))
-            .andExpect(jsonPath("$.available").value(false));
-        mvc.perform(post("/auth/register").with(csrf())
-            .param("name", "다른직원").param("phone", "01098765432")
-            .param("email", "other@example.test")
-            .param("username", "NEWSTAFF").param("password", "password"))
-            .andExpect(status().isBadRequest());
-        mvc.perform(post("/auth/find-username").with(csrf())
-            .param("name", "홍길동").param("phone", "01012345678"))
+        mvc.perform(post("/auth/verify-email").with(csrf()).param("token", token)).andExpect(
+            content().string(org.hamcrest.Matchers.containsString("이미 사용"))
+        );
+        mvc.perform(
+            post("/login").with(csrf()).param("username", "newstaff").param("password", "initial-pass")
+        ).andExpect(redirectedUrl("/"));
+        mvc.perform(get("/auth/check-username").param("username", "NEWSTAFF")).andExpect(
+            jsonPath("$.available").value(false)
+        );
+        mvc.perform(
+            post("/auth/register")
+                .with(csrf())
+                .param("name", "다른직원")
+                .param("phone", "01098765432")
+                .param("email", "other@example.test")
+                .param("username", "NEWSTAFF")
+                .param("password", "password")
+        ).andExpect(status().isBadRequest());
+        mvc.perform(post("/auth/find-username").with(csrf()).param("name", "홍길동").param("phone", "01012345678"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.message").value("아이디는 ne******입니다."));
-        mvc.perform(post("/auth/find-username").with(csrf())
-            .param("name", "홍길동").param("phone", "01000000000"))
-            .andExpect(status().isBadRequest());
-        mvc.perform(post("/auth/find-username").with(csrf())
-            .param("name", "홍길동").param("phone", "01000000000"))
-            .andExpect(status().isBadRequest());
-        mvc.perform(post("/auth/find-username").with(csrf())
-            .param("name", "홍길동").param("phone", "01000000000"))
+        mvc.perform(
+            post("/auth/find-username").with(csrf()).param("name", "홍길동").param("phone", "01000000000")
+        ).andExpect(status().isBadRequest());
+        mvc.perform(
+            post("/auth/find-username").with(csrf()).param("name", "홍길동").param("phone", "01000000000")
+        ).andExpect(status().isBadRequest());
+        mvc.perform(post("/auth/find-username").with(csrf()).param("name", "홍길동").param("phone", "01000000000"))
             .andExpect(status().isTooManyRequests())
             .andExpect(jsonPath("$.message").value("조회에 3회 이상 실패했습니다. 관리자에게 문의해 주세요."));
-        mvc.perform(post("/auth/find-username").with(csrf())
-            .param("name", "홍길동").param("phone", "01012345678"))
-            .andExpect(status().isOk());
-        mvc.perform(post("/auth/find-username").with(csrf())
-            .with(request -> { request.setRemoteAddr("192.0.2.10"); return request; })
-            .param("name", "홍길동").param("phone", "010-0000-0000"))
-            .andExpect(status().isTooManyRequests());
-        assertThat(lookupAttempts.findAll().stream()
-            .filter(attempt -> attempt.getOutcome() == UsernameLookupAttempt.Outcome.FAILED).count()).isEqualTo(3);
+        mvc.perform(
+            post("/auth/find-username").with(csrf()).param("name", "홍길동").param("phone", "01012345678")
+        ).andExpect(status().isOk());
+        mvc.perform(
+            post("/auth/find-username")
+                .with(csrf())
+                .with(request -> {
+                    request.setRemoteAddr("192.0.2.10");
+                    return request;
+                })
+                .param("name", "홍길동")
+                .param("phone", "010-0000-0000")
+        ).andExpect(status().isTooManyRequests());
+        assertThat(
+            lookupAttempts
+                .findAll()
+                .stream()
+                .filter(attempt -> attempt.getOutcome() == UsernameLookupAttempt.Outcome.FAILED)
+                .count()
+        ).isEqualTo(3);
         assertThat(lookupAttempts.count()).isEqualTo(6);
         String originalHash = account.getPasswordHash();
-        mvc.perform(post("/auth/reset-password").with(csrf()).param("username", "newstaff"))
-            .andExpect(status().isNotFound());
+        mvc.perform(post("/auth/reset-password").with(csrf()).param("username", "newstaff")).andExpect(
+            status().isNotFound()
+        );
         assertThat(account.getPasswordHash()).isEqualTo(originalHash);
-        mvc.perform(get("/login"))
-            .andExpect(content().string(org.hamcrest.Matchers.containsString("비밀번호 재설정 요청")));
+        mvc.perform(get("/login")).andExpect(
+            content().string(org.hamcrest.Matchers.containsString("비밀번호 재설정 요청"))
+        );
     }
 
     @Test
     void broadIpLimitStillStopsManyDifferentUsernameLookups() throws Exception {
         for (int i = 0; i < 30; i++) {
-            mvc.perform(post("/auth/find-username").with(csrf())
-                .with(request -> { request.setRemoteAddr("192.0.2.20"); return request; })
-                .param("name", "없는직원" + i).param("phone", "01000000000"))
-                .andExpect(status().isBadRequest());
+            mvc.perform(
+                post("/auth/find-username")
+                    .with(csrf())
+                    .with(request -> {
+                        request.setRemoteAddr("192.0.2.20");
+                        return request;
+                    })
+                    .param("name", "없는직원" + i)
+                    .param("phone", "01000000000")
+            ).andExpect(status().isBadRequest());
         }
-        mvc.perform(post("/auth/find-username").with(csrf())
-            .with(request -> { request.setRemoteAddr("192.0.2.20"); return request; })
-            .param("name", "새로운직원").param("phone", "01011112222"))
+        mvc.perform(
+            post("/auth/find-username")
+                .with(csrf())
+                .with(request -> {
+                    request.setRemoteAddr("192.0.2.20");
+                    return request;
+                })
+                .param("name", "새로운직원")
+                .param("phone", "01011112222")
+        )
             .andExpect(status().isTooManyRequests())
-            .andExpect(jsonPath("$.message").value("조회 요청이 많습니다. 잠시 후 다시 시도하거나 관리자에게 문의해 주세요."));
+            .andExpect(
+                jsonPath("$.message").value("조회 요청이 많습니다. 잠시 후 다시 시도하거나 관리자에게 문의해 주세요.")
+            );
     }
 
     @Test
     void verificationEmailCanBeResentWithoutReusingOldLink() throws Exception {
-        mvc.perform(post("/auth/register").with(csrf())
-            .param("name", "메일직원").param("phone", "01022223333")
-            .param("email", "mail@example.test")
-            .param("username", "mailstaff").param("password", "initial-pass"))
-            .andExpect(status().isOk());
-        mvc.perform(post("/auth/resend-verification").with(csrf()).param("email", "mail@example.test"))
-            .andExpect(status().isOk());
+        mvc.perform(
+            post("/auth/register")
+                .with(csrf())
+                .param("name", "메일직원")
+                .param("phone", "01022223333")
+                .param("email", "mail@example.test")
+                .param("username", "mailstaff")
+                .param("password", "initial-pass")
+        ).andExpect(status().isOk());
+        mvc.perform(post("/auth/resend-verification").with(csrf()).param("email", "mail@example.test")).andExpect(
+            status().isOk()
+        );
         ArgumentCaptor<String> links = ArgumentCaptor.forClass(String.class);
-        verify(verificationEmailSender, times(2))
-            .send(org.mockito.ArgumentMatchers.eq("mail@example.test"), links.capture());
+        verify(verificationEmailSender, times(2)).send(
+            org.mockito.ArgumentMatchers.eq("mail@example.test"),
+            links.capture()
+        );
         String oldToken = links.getAllValues().get(0).split("token=")[1];
         String newToken = links.getAllValues().get(1).split("token=")[1];
-        mvc.perform(get("/auth/verify-email").param("token", oldToken))
-            .andExpect(content().string(org.hamcrest.Matchers.containsString("이미 사용")));
-        mvc.perform(get("/auth/verify-email").param("token", newToken))
-            .andExpect(content().string(org.hamcrest.Matchers.containsString("이메일 확인")));
+        mvc.perform(get("/auth/verify-email").param("token", oldToken)).andExpect(
+            content().string(org.hamcrest.Matchers.containsString("이미 사용"))
+        );
+        mvc.perform(get("/auth/verify-email").param("token", newToken)).andExpect(
+            content().string(org.hamcrest.Matchers.containsString("이메일 확인"))
+        );
         mvc.perform(post("/auth/resend-verification").with(csrf()).param("email", "missing@example.test"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.message").value("인증이 필요한 계정이면 이메일을 다시 보냈습니다."));

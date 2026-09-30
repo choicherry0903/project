@@ -1,0 +1,200 @@
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout/base :: layout('자재 품목 정보', ~{::main})}"
+>
+  <main>
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">MAT-02 · MATERIAL DETAILS</p>
+        <h1 th:text="${materialId == null ? '자재 등록' : '자재 수정'}"></h1>
+        <p class="muted">발주에 사용할 자재의 분류와 상세 정보를 입력하세요.</p>
+      </div>
+    </div>
+    <form
+      class="panel edit-form"
+      data-dirty-check
+      th:action="${materialId == null} ? @{/materials} : @{/materials/{id}(id=${materialId})}"
+      th:object="${form}"
+      method="post"
+      enctype="multipart/form-data"
+    >
+      <div
+        class="notice error"
+        role="alert"
+        th:if="${#fields.hasAnyErrors()}"
+      >
+        <p
+          th:each="error : ${#fields.allErrors()}"
+          th:text="${error}"
+        ></p>
+      </div>
+      <input
+        type="hidden"
+        th:field="*{version}"
+      />
+      <h2>자재 분류</h2>
+      <div class="form-grid">
+        <div>
+          <label for="category">1뎁스 · 공간 *</label>
+          <select
+            th:field="*{category}"
+            required
+          >
+            <option value="">공간을 선택하세요</option>
+            <option
+              th:each="c : ${categories}"
+              th:value="${c.code()}"
+              th:text="${c.label()}"
+            ></option>
+          </select>
+        </div>
+        <div>
+          <label for="subcategory">2뎁스 · 품목 *</label>
+          <select
+            th:field="*{subcategory}"
+            required
+          >
+            <option value="">품목을 선택하세요</option>
+            <option
+              th:each="i : ${subcategories}"
+              th:value="${i.code()}"
+              th:text="${i.label()}"
+            ></option>
+          </select>
+        </div>
+      </div>
+      <h2>상세 정보</h2>
+      <div class="form-grid">
+        <div>
+          <label for="name">품명 *</label>
+          <input
+            th:field="*{name}"
+            required
+            maxlength="200"
+            placeholder="예: 피에트라 그레이"
+          />
+        </div>
+        <div>
+          <label for="brand">제조사</label>
+          <input
+            th:field="*{brand}"
+            maxlength="100"
+            placeholder="예: 예림, DOT, 대림바스"
+          />
+        </div>
+        <div>
+          <label for="size">사이즈</label>
+          <input
+            th:field="*{size}"
+            maxlength="100"
+            placeholder="예: 600X600, 1200X600"
+          />
+        </div>
+        <div>
+          <label for="color">색상</label>
+          <input
+            th:field="*{color}"
+            maxlength="100"
+            placeholder="예: 라임회벽 아이보리, HP530"
+          />
+        </div>
+      </div>
+      <h2>자재 이미지</h2>
+      <div th:if="${material != null and material.imageKey != null}">
+        <p>현재 이미지</p>
+        <img
+          class="material-image"
+          th:src="@{/materials/{id}/image(id=${material.id})}"
+          alt="등록된 자재 이미지"
+        />
+        <label class="checkbox">
+          <input
+            type="checkbox"
+            th:field="*{removeImage}"
+          />
+          현재 이미지 삭제 (저장 시 반영)
+        </label>
+      </div>
+      <label for="material-image">이미지 선택</label>
+      <input
+        id="material-image"
+        name="image"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        aria-describedby="image-help image-error"
+      />
+      <p
+        id="image-help"
+        class="muted"
+      >
+        이미지는 품목당 최대 1개만 등록할 수 있습니다. JPG, PNG, WEBP · 최대 10MB · 2,500만 화소 이하. 선택한 이미지는
+        아래에서 미리볼 수 있으며, 저장 시 반영됩니다. 새 이미지를 선택하면 기존 이미지를 교체합니다.
+      </p>
+      <p
+        id="image-error"
+        class="field-error"
+        role="alert"
+      ></p>
+      <small
+        class="field-error"
+        th:if="${#fields.hasAnyErrors()}"
+      >
+        저장에 실패한 경우 이미지를 다시 선택해 주세요.
+      </small>
+      <div
+        id="image-preview"
+        class="material-preview"
+      >
+        <h3>선택한 이미지 미리보기</h3>
+        <p
+          id="image-placeholder"
+          class="muted"
+        >
+          이미지를 선택하면 여기에 표시됩니다.
+        </p>
+        <img
+          id="preview-image"
+          alt="선택한 자재 이미지 미리보기"
+          class="material-image"
+          hidden
+        />
+        <p
+          id="image-name"
+          role="status"
+          aria-live="polite"
+        ></p>
+        <button
+          id="remove-image"
+          type="button"
+          class="button secondary"
+          hidden
+        >
+          이미지 선택 취소
+        </button>
+      </div>
+      <div
+        class="toolbar"
+        style="margin-top: 24px"
+      >
+        <button
+          class="button"
+          type="submit"
+        >
+          저장
+        </button>
+        <a
+          class="button secondary"
+          th:href="${materialId == null} ? @{/materials} : @{/materials/{id}(id=${materialId})}"
+        >
+          취소
+        </a>
+      </div>
+    </form>
+    <script
+      th:src="@{/js/material.js}"
+      defer
+    ></script>
+  </main>
+</html>
