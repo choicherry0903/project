@@ -15,7 +15,7 @@ public class StaffPrincipal extends User {
         super(
             account.getUsername(),
             account.getPasswordHash(),
-            account.isActive(),
+            account.isActive() && (account.getEmail() == null || account.getEmailVerifiedAt() != null),
             true,
             true,
             true,

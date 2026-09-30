@@ -22,7 +22,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http, StaffAccountRepository accounts) throws Exception {
         http.authorizeHttpRequests(auth ->
             auth
-                .requestMatchers("/login", "/css/**", "/js/**", "/error", "/favicon.ico")
+                .requestMatchers("/login", "/auth/**", "/css/**", "/js/**", "/error", "/favicon.ico")
                 .permitAll()
                 .requestMatchers("/settings/**")
                 .hasRole("ADMIN")
