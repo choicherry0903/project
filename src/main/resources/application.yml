@@ -38,6 +38,11 @@ server:
     include-message: never
     include-stacktrace: never
 app:
+  storage:
+    endpoint: ${R2_ENDPOINT:}
+    bucket: ${R2_BUCKET:}
+    access-key-id: ${R2_ACCESS_KEY_ID:}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY:}
   company-id: 1
   company-name: 설기 시공
   public-base-url: ${APP_PUBLIC_BASE_URL:http://localhost:8080}

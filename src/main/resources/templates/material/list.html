@@ -2,30 +2,182 @@
 <html
   lang="ko"
   xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{layout/base :: layout(${title}, ~{::main})}"
+  th:replace="~{layout/base :: layout('자재 품목 관리', ~{::main})}"
 >
   <main>
     <div class="page-heading">
       <div>
-        <p
-          class="eyebrow"
-          th:text="${screenId}"
-        ></p>
-        <h1 th:text="${title}"></h1>
+        <p class="eyebrow">MAT-01 · MATERIALS</p>
+        <h1>자재 품목 관리</h1>
+        <p class="muted">공간과 품목별로 자재를 등록하고 관리하세요.</p>
       </div>
-      <span class="badge">개발 예정</span>
-    </div>
-    <section class="panel empty-state">
-      <div class="empty-icon">＋</div>
-      <h2>화면 개발을 준비하고 있습니다</h2>
-      <p th:text="${description}"></p>
-      <p class="muted">현재는 화면 경로와 데이터 모델이 준비된 초기 프로젝트입니다.</p>
       <a
-        class="button secondary"
-        th:href="@{/}"
+        class="button"
+        th:href="@{/materials/new}"
       >
-        시작 화면으로
+        ＋ 자재 등록
       </a>
+    </div>
+    <div
+      class="notice error"
+      role="alert"
+      th:if="${materialError}"
+      th:text="${materialError}"
+    ></div>
+    <section class="panel">
+      <form
+        method="get"
+        th:action="@{/materials}"
+        class="material-search"
+      >
+        <div>
+          <label for="category">1뎁스</label>
+          <select
+            id="category"
+            name="category"
+          >
+            <option value="">1뎁스 전체</option>
+            <option
+              th:each="c : ${categories}"
+              th:value="${c.code()}"
+              th:text="${c.label()}"
+              th:selected="${category == c.code()}"
+            ></option>
+          </select>
+        </div>
+        <div>
+          <label for="subcategory">2뎁스</label>
+          <select
+            id="subcategory"
+            name="subcategory"
+          >
+            <option value="">2뎁스 전체</option>
+            <option
+              th:each="i : ${subcategories}"
+              th:value="${i.code()}"
+              th:text="${i.label()}"
+              th:selected="${subcategory == i.code()}"
+            ></option>
+          </select>
+        </div>
+        <div>
+          <label for="keyword">품명 · 제조사 검색</label>
+          <input
+            id="keyword"
+            name="keyword"
+            th:value="${keyword}"
+            placeholder="품명 또는 제조사"
+            maxlength="200"
+          />
+        </div>
+        <div class="material-search-actions">
+          <button
+            class="button"
+            type="submit"
+          >
+            검색
+          </button>
+          <a
+            class="button secondary"
+            th:href="@{/materials}"
+          >
+            초기화
+          </a>
+        </div>
+      </form>
+      <p
+        class="muted"
+        th:text="|총 ${materials.totalElements}개 품목|"
+      ></p>
+      <div
+        style="overflow-x: auto"
+        th:unless="${materials.empty}"
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>이미지</th>
+              <th>1뎁스</th>
+              <th>2뎁스</th>
+              <th>품명</th>
+              <th>제조사</th>
+              <th>사이즈</th>
+              <th>색상</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="m : ${materials}">
+              <td>
+                <a
+                  th:if="${m.imageKey != null}"
+                  th:href="@{/materials/{id}(id=${m.id})}"
+                >
+                  <img
+                    class="material-thumbnail"
+                    loading="lazy"
+                    th:src="@{/materials/{id}/image(id=${m.id})}"
+                    th:alt="${m.name} + ' 이미지'"
+                  />
+                </a>
+                <span
+                  th:if="${m.imageKey == null}"
+                  class="muted"
+                >
+                  —
+                </span>
+              </td>
+              <td th:text="${m.categoryLabel}"></td>
+              <td th:text="${m.subcategoryLabel}"></td>
+              <td>
+                <a
+                  th:href="@{/materials/{id}(id=${m.id})}"
+                  th:text="${m.name}"
+                ></a>
+              </td>
+              <td th:text="${m.brand}"></td>
+              <td th:text="${m.size}"></td>
+              <td th:text="${m.color}"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div
+        class="empty-state"
+        th:if="${materials.empty}"
+      >
+        <h2>등록된 자재가 없습니다</h2>
+        <p class="muted">검색 조건을 바꾸거나 새 자재를 등록하세요.</p>
+        <a
+          class="button"
+          th:href="@{/materials/new}"
+        >
+          ＋ 자재 등록
+        </a>
+      </div>
+      <div
+        class="toolbar"
+        th:if="${materials.totalPages > 1}"
+      >
+        <a
+          class="button secondary"
+          th:if="${materials.hasPrevious()}"
+          th:href="@{/materials(category=${category},subcategory=${subcategory},keyword=${keyword},page=${materials.number - 1})}"
+        >
+          이전
+        </a>
+        <span th:text="|${materials.number + 1} / ${materials.totalPages}|"></span>
+        <a
+          class="button secondary"
+          th:if="${materials.hasNext()}"
+          th:href="@{/materials(category=${category},subcategory=${subcategory},keyword=${keyword},page=${materials.number + 1})}"
+        >
+          다음
+        </a>
+      </div>
     </section>
+    <script
+      th:src="@{/js/material.js}"
+      defer
+    ></script>
   </main>
 </html>

@@ -9,6 +9,8 @@ spring:
   flyway:
     enabled: true
 app:
+  storage:
+    cleanup-enabled: false
   bootstrap:
     username: test-admin
     password: TestOnlyPassword!2026

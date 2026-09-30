@@ -1,0 +1,90 @@
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout/base :: layout('자재 상세', ~{::main})}"
+>
+  <main>
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">MAT-03 · MATERIAL DETAILS</p>
+        <h1>자재 상세</h1>
+        <p
+          class="muted"
+          th:text="${material.name}"
+        ></p>
+      </div>
+      <a
+        class="button secondary"
+        th:href="@{/materials}"
+      >
+        목록으로
+      </a>
+    </div>
+    <div
+      class="notice error"
+      role="alert"
+      th:if="${materialError}"
+      th:text="${materialError}"
+    ></div>
+    <section class="panel edit-form">
+      <h2>자재 정보</h2>
+      <dl class="details">
+        <dt>1뎁스</dt>
+        <dd th:text="${material.categoryLabel}"></dd>
+        <dt>2뎁스</dt>
+        <dd th:text="${material.subcategoryLabel}"></dd>
+        <dt>품명</dt>
+        <dd th:text="${material.name}"></dd>
+        <dt>제조사</dt>
+        <dd th:text="${#strings.isEmpty(material.brand) ? '미등록' : material.brand}"></dd>
+        <dt>사이즈</dt>
+        <dd th:text="${#strings.isEmpty(material.size) ? '미등록' : material.size}"></dd>
+        <dt>색상</dt>
+        <dd th:text="${#strings.isEmpty(material.color) ? '미등록' : material.color}"></dd>
+      </dl>
+      <h2>자재 이미지</h2>
+      <img
+        th:if="${material.imageKey != null}"
+        class="material-image"
+        th:src="@{/materials/{id}/image(id=${material.id})}"
+        th:alt="${material.name} + ' 자재 이미지'"
+      />
+      <p
+        th:if="${material.imageKey == null}"
+        class="muted"
+      >
+        등록된 이미지가 없습니다.
+      </p>
+      <div class="material-detail-actions">
+        <a
+          class="button"
+          th:href="@{/materials/{id}/edit(id=${material.id})}"
+        >
+          수정
+        </a>
+        <form
+          method="post"
+          th:action="@{/materials/{id}/delete(id=${material.id})}"
+          data-material-delete
+        >
+          <input
+            type="hidden"
+            name="version"
+            th:value="${material.version}"
+          />
+          <button
+            class="button secondary"
+            type="submit"
+          >
+            삭제
+          </button>
+        </form>
+      </div>
+    </section>
+    <script
+      th:src="@{/js/material.js}"
+      defer
+    ></script>
+  </main>
+</html>

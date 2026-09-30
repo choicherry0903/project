@@ -14,6 +14,55 @@ public class Material extends BaseEntity {
     @Column(nullable = false, length = 50)
     private String category;
 
+    @Column(length = 50)
+    private String subcategory;
+
+    @Column(name = "material_size", length = 100)
+    private String size;
+
+    @Column(length = 512)
+    private String imageKey;
+
+    public String getImageKey() {
+        return imageKey;
+    }
+
+    public void setImageKey(String imageKey) {
+        this.imageKey = imageKey;
+    }
+
+    public String getSubcategory() {
+        return subcategory;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public String getCategoryLabel() {
+        return MaterialCategories.categoryLabel(category);
+    }
+
+    public String getSubcategoryLabel() {
+        return MaterialCategories.itemLabel(subcategory);
+    }
+
+    public void updateDetails(
+        String category,
+        String subcategory,
+        String name,
+        String brand,
+        String size,
+        String color
+    ) {
+        this.category = category;
+        this.subcategory = subcategory;
+        this.name = name.trim();
+        this.brand = brand == null ? null : brand.trim();
+        this.size = size == null ? null : size.trim();
+        this.color = color == null ? null : color.trim();
+    }
+
     @Column(length = 100)
     private String brand;
 
