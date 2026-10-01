@@ -37,12 +37,12 @@
       <h2>자재 분류</h2>
       <div class="form-grid">
         <div>
-          <label for="category">1뎁스 · 공간 *</label>
+          <label for="category">장소 *</label>
           <select
             th:field="*{category}"
             required
           >
-            <option value="">공간을 선택하세요</option>
+            <option value="">장소를 선택하세요</option>
             <option
               th:each="c : ${categories}"
               th:value="${c.code()}"
@@ -51,7 +51,7 @@
           </select>
         </div>
         <div>
-          <label for="subcategory">2뎁스 · 품목 *</label>
+          <label for="subcategory">품목 *</label>
           <select
             th:field="*{subcategory}"
             required

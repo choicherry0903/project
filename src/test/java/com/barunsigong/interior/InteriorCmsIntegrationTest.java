@@ -63,7 +63,7 @@ class InteriorCmsIntegrationTest {
         mvc.perform(get("/materials").with(user(admin)))
             .andExpect(status().isOk())
             .andExpect(content().string(org.hamcrest.Matchers.containsString("/materials/new")))
-            .andExpect(content().string(org.hamcrest.Matchers.containsString("2뎁스 전체")));
+            .andExpect(content().string(org.hamcrest.Matchers.containsString("품목 전체")));
         mvc.perform(get("/materials/new").with(user(admin)))
             .andExpect(status().isOk())
             .andExpect(content().string(org.hamcrest.Matchers.containsString("600X600")))

@@ -16,6 +16,8 @@
 | PRJ-01 | /projects | ConstructionProjectController / project/list | 현장명·주소·상태 검색, 페이징. 고객명·기간 필터는 후속 |
 | PRJ-02 | /projects/new, /projects/{id}/edit | ConstructionProjectController / project/form | 고객 연결, 기본정보 등록·수정, 희망 시공일·현장 조건 |
 | PRJ-03 | /projects/{id} | ConstructionProjectController / project/detail | 기본정보와 업무 탭. 상태 전이·금액 요약·감사 이력은 후속 |
+| SUR-01 | /projects/{projectId}/survey | SurveyController / survey/* | 공간별 실측 등록·수정·조회, 벽/천장 면적 계산, 수정 이력 보존 |
+| MAT-01 | /materials | MaterialController / material/* | 자재 분류·품목 CRUD, 업체별 조회, 이미지 업로드·교체·삭제 |
 
 등록 폼의 요청 키로 같은 요청의 순차 재시도를 중복 저장하지 않습니다.
 동시 등록의 고유키 충돌은 오류 안내 후 목록 확인으로 처리하며, 완전한 재시도 응답 재생은 후속 구현입니다.
@@ -30,7 +32,6 @@
 
 | 화면 ID | 화면 | 경로 | 컨트롤러 | View | 후속 구현 |
 | --- | --- | --- | --- | --- | --- |
-| SUR-01 | 공간별 실측 | `/projects/{projectId}/survey` | SurveyController | `survey/form.html` | 둘레·높이·개구부·천장 면적 입력 및 실측 버전 저장 |
 | EST-01 | 견적 작성 | `/estimates` | EstimateController | `estimate/form.html` | 항목별 수량·단가 입력, 서버 금액 계산, 초안 저장 |
 | EST-02 | 견적 미리보기 | `/estimates/preview` | EstimatePreviewController | `estimate/preview.html` | 업체·고객 정보와 견적 버전을 보존한 PDF 출력 |
 | EST-03 | 견적 이력 | `/estimates/history` | EstimateHistoryController | `estimate/history.html` | 확정 견적 보존, 개정 사유와 버전별 조회 |
@@ -38,7 +39,6 @@
 | SCH-01 | 일정 캘린더 | `/schedules` | ScheduleController | `schedule/calendar.html` | 월·주·목록 조회와 일정 유형별 필터 |
 | SCH-02 | 일정과 작업자 배정 | `/schedules/new` | ScheduleAssignmentController | `schedule/form.html` | 작업자별 시간 충돌 검증과 배정 알림 |
 | WRK-01 | 작업 기록 | `/work-logs` | WorkLogController | `work/list.html` | 작업 일지·이슈 입력과 작성자별 수정 권한 |
-| MAT-01 | 자재 기준정보 | `/materials` | MaterialController | `material/list.html` | 품명·품번·판매 단가·롤 기준 관리 |
 | MAT-02 | 자재 발주 | `/purchase-orders` | PurchaseOrderController | `purchase/list.html` | 2차 기능: 발주·부분입고·반품 및 비용 연결 |
 | FIN-01 | 비용과 예상 이익 | `/costs` | ProjectCostController | `cost/list.html` | 2차 기능: 비용 원장·증빙·정정 이력 |
 | PAY-01 | 입금 계획과 수금 | `/payments` | PaymentController | `payment/list.html` | 분할 입금·환불·취소 원장과 미수금 집계 |
@@ -56,7 +56,7 @@
 ## 먼저 구현할 작업
 
 1. 상담 이력 추가·수정 감사, 고객 보관, 고객·현장의 필터 확대.
-2. 실측 저장 버전, 파일 첨부의 MIME·확장자·용량·소유 범위 검증.
+2. 현장 첨부 파일의 MIME·확장자·용량·소유 범위 검증.
 3. 견적 항목/초안 저장, 확정 조건, 회사·항목 스냅샷, 복제 개정, PDF.
 4. 계약·변경 계약과 결제 계획 합계 검증.
 5. 작업자 배정 시 동시성 잠금과 충돌 확인, 본인 배정 조회 DTO.
@@ -65,5 +65,4 @@
 8. 상태 전이·보류·취소와 감사 이력. 설계서 39쪽의 시나리오를 통합 테스트로 추가.
 9. 2차 기능: 발주·부분입고·실제 원가·A/S·사진 분류.
 
-실측 면적, 롤 수량, 견적 계산, 일정의 시간 겹침은 독립 서비스와 테스트가 준비되어 있습니다.
-저장·상태 변경 서비스와 연결하는 것은 후속 작업입니다.
+실측 면적 계산은 실측 저장 화면에 연결했습니다. 롤 수량, 견적 계산, 일정의 시간 겹침은 독립 서비스와 테스트가 준비되어 있으며, 견적·일정 저장과 연결하는 것은 후속 작업입니다.
