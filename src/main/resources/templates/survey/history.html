@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout/base :: layout('실측 변경 이력', ~{::main})}">
+  <main>
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">SUR-01 · HISTORY</p>
+        <h1>실측 변경 이력</h1>
+        <p class="muted" th:text="|${project.name} · ${roomName}|"></p>
+      </div>
+      <a class="button secondary" th:href="@{/projects/{id}/survey(id=${project.id})}">실측 목록</a>
+    </div>
+    <section class="panel">
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>버전</th><th>공간</th><th>둘레 × 높이 (m)</th><th>개구부 (㎡)</th><th>벽 면적 (㎡)</th><th>천장 (㎡)</th><th>작업 면적 (㎡)</th><th>표면 상태·메모</th></tr></thead>
+          <tbody>
+            <tr th:each="room : ${revisions}">
+              <td th:text="|v${room.measurement.revision}|"></td>
+              <td th:text="${room.measurement.roomName}"></td>
+              <td th:text="|${room.measurement.perimeter} × ${room.measurement.height}|"></td>
+              <td th:text="${room.measurement.openingArea}"></td>
+              <td th:text="${room.wallArea}"></td>
+              <td th:text="${room.measurement.includeCeiling ? room.measurement.ceilingArea : '제외'}"></td>
+              <td th:text="${room.totalArea}"></td>
+              <td class="preserve-lines" th:text="${room.measurement.surfaceCondition ?: '없음'}"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</html>

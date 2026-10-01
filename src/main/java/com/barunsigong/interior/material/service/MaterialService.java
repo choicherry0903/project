@@ -62,7 +62,7 @@ public class MaterialService {
     /** External upload holds no DB connection; the writer rechecks version on commit. */
     public Material save(Long id, MaterialForm form) {
         if (!MaterialCategories.valid(form.getCategory(), form.getSubcategory())) throw new IllegalArgumentException(
-            "등록된 1뎁스와 2뎁스 항목을 선택해 주세요."
+            "등록된 장소와 품목을 선택해 주세요."
         );
         if (id != null && get(id).getVersion() != form.getVersion()) throw new IllegalArgumentException(
             "다른 사용자가 수정했습니다. 새로고침 후 다시 확인해 주세요."

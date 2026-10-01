@@ -4,11 +4,11 @@ import jakarta.validation.constraints.*;
 
 public class MaterialForm {
 
-    @NotBlank(message = "1뎁스를 선택해 주세요.")
+    @NotBlank(message = "장소를 선택해 주세요.")
     @Size(max = 50)
     private String category;
 
-    @NotBlank(message = "2뎁스를 선택해 주세요.")
+    @NotBlank(message = "품목을 선택해 주세요.")
     @Size(max = 50)
     private String subcategory;
 

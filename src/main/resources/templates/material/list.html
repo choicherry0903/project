@@ -31,12 +31,12 @@
         class="material-search"
       >
         <div>
-          <label for="category">1뎁스</label>
+          <label for="category">장소</label>
           <select
             id="category"
             name="category"
           >
-            <option value="">1뎁스 전체</option>
+            <option value="">장소 전체</option>
             <option
               th:each="c : ${categories}"
               th:value="${c.code()}"
@@ -46,12 +46,12 @@
           </select>
         </div>
         <div>
-          <label for="subcategory">2뎁스</label>
+          <label for="subcategory">품목</label>
           <select
             id="subcategory"
             name="subcategory"
           >
-            <option value="">2뎁스 전체</option>
+            <option value="">품목 전체</option>
             <option
               th:each="i : ${subcategories}"
               th:value="${i.code()}"
@@ -97,8 +97,8 @@
           <thead>
             <tr>
               <th>이미지</th>
-              <th>1뎁스</th>
-              <th>2뎁스</th>
+              <th>장소</th>
+              <th>품목</th>
               <th>품명</th>
               <th>제조사</th>
               <th>사이즈</th>
