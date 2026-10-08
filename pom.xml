@@ -11,11 +11,11 @@
     <version>4.0.8</version>
     <relativePath />
   </parent>
-  <groupId>com.barunsigong</groupId>
+  <groupId>com.roofandwall</groupId>
   <artifactId>interior-cms</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Interior CMS</name>
-  <description>바른시공 도배·인테리어 관리시스템</description>
+  <description>지붕과벽 도배·인테리어 관리시스템</description>
   <properties>
     <java.version>25</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
