@@ -1,4 +1,4 @@
-# 바른시공 · Interior CMS
+# 지붕과벽 · Interior CMS
 
 도배·인테리어 화면설계서 v1.0을 바탕으로 만든 **Java 25 / Spring Boot MVC 초기 프로젝트**입니다.
 고객·현장 등록·조회, 자재 관리, 공간별 실측 저장을 실행할 수 있으며, 나머지 업무는 화면·모델 구조와 개발 항목을 준비했습니다.
@@ -110,7 +110,7 @@ Java/YAML은 무중단 변경이 아니라 수동 중지·실행을 대신하는
 ## 구조
 
 ```text
-src/main/java/com/barunsigong/interior/
+src/main/java/com/roofandwall/interior/
   InteriorCmsApplication.java
   config/                    인증·프로필·초기 관리자
   common/                    공통 모델·오류·뷰 모델
