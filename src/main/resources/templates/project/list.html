@@ -1,130 +1,23 @@
-<!doctype html>
-<html
-  lang="ko"
-  xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{layout/base :: layout('현장 관리', ~{::main})}"
->
-  <main>
-    <div class="page-heading">
-      <div>
-        <p class="eyebrow">PRJ-01 · PROJECTS</p>
-        <h1>현장 관리</h1>
-        <p class="muted">공사 현황과 현장 정보를 한눈에 확인하세요.</p>
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('고객·현장 목록')}"></head>
+<body>
+<a class="skip-link" href="#main">본문으로 이동</a>
+<div class="app-shell">
+  <aside th:replace="~{layout/base :: sidebar('list')}"></aside>
+  <main id="main" class="main-content">
+    <header class="page-header"><div><p class="eyebrow">고객과 현장을 한곳에서</p><h1>고객·현장 목록</h1><p class="description">현장별 고객 정보와 진행 상태, 다음 할 일을 확인합니다.</p></div><button class="button primary" type="button" disabled>고객·현장 등록</button></header>
+    <div th:replace="~{layout/base :: notice}"></div>
+    <section class="panel" aria-labelledby="list-title">
+      <div class="panel-heading"><h2 id="list-title">전체 현장</h2><span class="badge">등록 전</span></div>
+      <div class="filter-bar">
+        <div class="field search-field"><label for="query">고객·현장 검색</label><input id="query" type="search" placeholder="고객명 또는 현장명" disabled></div>
+        <div class="field"><label for="status">진행 상태</label><select id="status" disabled><option>전체 상태</option><option>상담</option><option>현장 확인</option><option>견적</option><option>계약</option><option>시공</option><option>완료·AS</option></select></div>
+        <button class="button" type="button" disabled>검색</button>
       </div>
-      <a
-        class="button"
-        th:href="@{/projects/new}"
-      >
-        ＋ 현장 등록
-      </a>
-    </div>
-    <section class="panel">
-      <form
-        class="search-bar"
-        th:action="@{/projects}"
-        method="get"
-      >
-        <label
-          class="sr-only"
-          for="keyword"
-        >
-          현장 검색
-        </label>
-        <input
-          id="keyword"
-          name="keyword"
-          th:value="${keyword}"
-          placeholder="현장명 또는 주소"
-        />
-        <label
-          class="sr-only"
-          for="status"
-        >
-          업무 상태
-        </label>
-        <select
-          name="status"
-          id="status"
-        >
-          <option value="">전체 상태</option>
-          <option
-            th:each="s : ${statuses}"
-            th:value="${s}"
-            th:selected="${s == selectedStatus}"
-            th:text="${#messages.msg('project.status.' + s)}"
-          ></option>
-        </select>
-        <button
-          class="button"
-          type="submit"
-        >
-          검색
-        </button>
-        <a
-          class="button secondary"
-          th:href="@{/projects}"
-        >
-          초기화
-        </a>
-      </form>
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>현장명 / 주소</th>
-              <th>상태</th>
-              <th>공사 종류</th>
-              <th>희망 시공일</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="project : ${projects.content}">
-              <td>
-                <a
-                  th:href="@{/projects/{id}(id=${project.id})}"
-                  th:text="${project.name}"
-                ></a>
-                <small
-                  class="muted block"
-                  th:text="${project.address}"
-                ></small>
-              </td>
-              <td>
-                <span
-                  class="badge"
-                  th:text="${project.statusLabel}"
-                ></span>
-              </td>
-              <td th:text="${project.constructionType}"></td>
-              <td th:text="${project.desiredStartDate ?: '미정'}"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div
-        class="empty-state"
-        th:if="${projects.empty}"
-      >
-        <h2>조건에 맞는 현장이 없습니다</h2>
-        <p>현장을 등록하거나 검색 조건을 초기화해 주세요.</p>
-      </div>
-      <div class="pagination">
-        <span th:text="'총 ' + ${projects.totalElements} + '건 · ' + (${projects.number}+1) + '페이지'"></span>
-        <div>
-          <a
-            th:if="${projects.hasPrevious()}"
-            th:href="@{/projects(keyword=${keyword},status=${selectedStatus},page=${projects.number-1})}"
-          >
-            이전
-          </a>
-          <a
-            th:if="${projects.hasNext()}"
-            th:href="@{/projects(keyword=${keyword},status=${selectedStatus},page=${projects.number+1})}"
-          >
-            다음
-          </a>
-        </div>
-      </div>
+      <div class="table-scroll"><table><caption class="sr-only">고객·현장 목록: 아직 데이터가 연결되지 않았습니다.</caption><thead><tr><th scope="col">현장명</th><th scope="col">고객</th><th scope="col">담당자</th><th scope="col">진행 상태</th><th scope="col">다음 할 일</th></tr></thead><tbody><tr><td colspan="5"><div class="empty-state"><span class="empty-icon" aria-hidden="true">＋</span><h3>현장 정보를 모을 공간입니다</h3><p>고객·현장 등록 기능이 연결되면 이곳에 목록이 표시됩니다.</p><a class="text-link" th:href="@{/projects/detail}">현장 상세 화면 보기 →</a></div></td></tr></tbody></table></div>
     </section>
   </main>
+</div>
+</body>
 </html>
