@@ -1,4 +1,4 @@
-package com.barunsigong.interior.project.controller;
+package com.roofandwall.interior.project.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

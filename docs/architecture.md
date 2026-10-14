@@ -3,11 +3,11 @@
 ## 기술 기반
 
 Java 25, Spring Boot 4.0.8, Spring MVC, Thymeleaf, Maven Wrapper.
-기존 Java 패키지 `com.barunsigong.interior`는 실행 구성의 호환성을 위해 유지합니다.
+Java 패키지는 main의 업체명 변경을 반영한 `com.roofandwall.interior`를 사용합니다.
 화면의 업체명은 지붕과벽입니다.
 
 ```text
-src/main/java/com/barunsigong/interior/
+src/main/java/com/roofandwall/interior/
   InteriorCmsApplication.java
   project/controller/
     ProjectListController.java
@@ -22,7 +22,7 @@ src/main/resources/
   templates/project/detail.html
   templates/consultation/ai.html
   static/css/app.css
-src/test/java/com/barunsigong/interior/
+src/test/java/com/roofandwall/interior/
   ScreenScaffoldIntegrationTest.java
 scripts/run-local.ps1
 .run/Interior CMS Local.run.xml

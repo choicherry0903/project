@@ -8,7 +8,7 @@
     <version>4.0.8</version>
     <relativePath/>
   </parent>
-  <groupId>com.barunsigong</groupId>
+  <groupId>com.roofandwall</groupId>
   <artifactId>interior-cms</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>지붕과벽 CMS</name>

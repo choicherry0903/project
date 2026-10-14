@@ -33,7 +33,7 @@ IntelliJ에서는 Maven 프로젝트를 다시 로드하고 JDK 25를 지정한 
 | 현장 상세 | `/projects/detail` | `project/controller/ProjectDetailController.java` | `templates/project/detail.html` |
 | AI 상담 정리 | `/consultations/ai` | `consultation/controller/AiConsultationController.java` | `templates/consultation/ai.html` |
 
-Java 파일의 기준 경로는 `src/main/java/com/barunsigong/interior/`,
+Java 파일의 기준 경로는 `src/main/java/com/roofandwall/interior/`,
 HTML 파일의 기준 경로는 `src/main/resources/`입니다.
 공통 메뉴는 `templates/layout/base.html`, 스타일은 `static/css/app.css`입니다.
 `/`는 목록으로 이동합니다. 상세 경로는 데이터 연결 전 화면 확인용 고정 경로입니다.
