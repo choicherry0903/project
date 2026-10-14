@@ -1,50 +1,37 @@
-# 초기 화면 구조
+# 현재 구조
 
-## 기술 기반
+Java 25, Spring Boot 4.0.8, Spring MVC, Thymeleaf, Spring JDBC, Supabase PostgreSQL.
+Java 패키지는 `com.roofandwall.interior`입니다.
 
-Java 25, Spring Boot 4.0.8, Spring MVC, Thymeleaf, Maven Wrapper.
-Java 패키지는 main의 업체명 변경을 반영한 `com.roofandwall.interior`를 사용합니다.
-화면의 업체명은 지붕과벽입니다.
+## 목록 조회
 
-```text
-src/main/java/com/roofandwall/interior/
-  InteriorCmsApplication.java
-  project/controller/
-    ProjectListController.java
-    ProjectDetailController.java
-  consultation/controller/
-    AiConsultationController.java
-src/main/resources/
-  application.yml
-  application-dev.yml
-  templates/layout/base.html
-  templates/project/list.html
-  templates/project/detail.html
-  templates/consultation/ai.html
-  static/css/app.css
-src/test/java/com/roofandwall/interior/
-  ScreenScaffoldIntegrationTest.java
-scripts/run-local.ps1
-.run/Interior CMS Local.run.xml
-```
+`ProjectListController → ProjectQueryService → ProjectRepository → Supabase`
 
-Controller는 View 이름만 반환합니다. 루트의 목록 이동 외에는 처리 로직이 없습니다.
-HTML은 Thymeleaf fragment로 공통 head와 세 메뉴, 준비 중 안내를 공유합니다.
-현재 데이터를 읽는 Service/Repository나 저장용 Entity/DTO는 필요하지 않으므로 생성하지 않습니다.
-업무 기능 확정 후 해당 계층을 추가합니다.
+기존 interior_cms 스키마의 construction_projects와 customers를 조인합니다.
+Repository는 SELECT만 제공하며 DTO ProjectListItem으로 반환합니다.
+조회 Service는 readOnly 트랜잭션으로 동작합니다.
+로그인 직원의 업체 ID로 제한하고 보관 고객은 제외합니다.
+템플릿은 th:text로 고객 입력을 이스케이프하고 빈 목록을 별도로 표시합니다.
 
-## 데이터 및 외부 연동
+## 화면
 
-DB, Flyway, 인증, SMTP, S3, AI SDK/API 연결이 없습니다.
-화면 확인을 위해 로그인이나 DB 연결 정보가 필요하지 않습니다.
-운영 배포 전에는 인증·권한과 데이터 보호를 실제 요구사항에 맞춰 추가해야 합니다.
+- project/list.html: 실제 DB 목록과 등록 화면 진입
+- project/form.html: 등록 입력 화면, 저장 버튼 비활성
+- project/detail.html: 기존 상세 골격
+- consultation/ai.html: 기존 AI 상담 골격
+- layout/base.html: 공통 head, 세 메뉴, 골격 화면용 안내
+- static/css/app.css: 공통 스타일과 반응형 목록/폼
 
-기존 마이그레이션은 소스에서 제거했지만 실제 DB는 변경하지 않았습니다.
-향후 새 모델의 DB 연결은 기존 스키마와의 관계를 검토한 뒤 별도로 진행합니다.
-로컬 `.env`는 실행 스크립트와 앱이 읽지 않습니다.
+ProjectRegistrationController는 GET /projects/new만 제공합니다.
+등록/수정/삭제, 상세 조회, 검색, AI 실행은 이번 범위에 없습니다.
 
-## 검증
+## 설정과 테스트
 
-전체 Spring 컨텍스트와 MockMvc로 실제 View 렌더링을 확인합니다.
-과거 URL이 사라졌는지와 세 화면에 POST 처리 경로가 없는지도 확인합니다.
-`clean` 빌드로 과거 컴파일 파일과 SQL/템플릿이 패키지에 포함되지 않게 합니다.
+application.yml이 .env 또는 환경 변수에서 Supabase 연결 정보를 읽습니다.
+자동 DDL/마이그레이션 없이 기존 테이블을 조회합니다.
+업체 범위는 로그인 직원의 company_id로 결정합니다.
+서버는 로컬 검토용으로 127.0.0.1에 바인딩합니다.
+
+테스트는 test 프로필의 메모리 H2로 실제 조회·출력·정렬·업체 범위를 검증합니다.
+테스트에만 최소 조회 컬럼을 재현하며 운영 DB 구조/데이터는 변경하지 않습니다.
+등록 개발 연결 위치는 [목록 개발 안내](project-list.md)에 정리했습니다.

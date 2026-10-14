@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('고객·현장 등록')}"></head>
+<body>
+<a class="skip-link" href="#main">본문으로 이동</a>
+<div class="app-shell">
+  <aside th:replace="~{layout/base :: sidebar('list')}"></aside>
+  <main id="main" class="main-content">
+    <header class="page-header">
+      <div><p class="eyebrow">새로운 현장의 시작</p><h1>고객·현장 등록</h1><p class="description">고객과 현장의 기본 정보를 입력하는 화면입니다.</p></div>
+      <a class="button" th:href="@{/projects}">목록으로</a>
+    </header>
+    <div class="notice"><strong>등록 기능 준비 중</strong><span>입력 화면만 준비되어 있습니다. 입력한 내용은 저장되지 않으며, 등록 처리는 이후 연결합니다.</span></div>
+    <form th:action="@{/projects}" method="post" aria-describedby="registration-help">
+      <section class="panel" aria-labelledby="customer-title">
+        <div class="panel-heading"><h2 id="customer-title">고객 정보</h2><span class="badge">필수 항목 *</span></div>
+        <div class="panel-body form-grid">
+          <div class="field"><label for="customerName">고객명 <span aria-hidden="true">*</span></label><input id="customerName" name="customerName" autocomplete="name" maxlength="50" placeholder="고객명을 입력하세요" required></div>
+          <div class="field"><label for="customerPhone">연락처 <span aria-hidden="true">*</span></label><input id="customerPhone" name="customerPhone" type="tel" autocomplete="tel" maxlength="15" placeholder="010-0000-0000" required></div>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="project-title">
+        <div class="panel-heading"><h2 id="project-title">현장 정보</h2></div>
+        <div class="panel-body form-grid">
+          <div class="field"><label for="projectName">현장명 <span aria-hidden="true">*</span></label><input id="projectName" name="projectName" maxlength="100" placeholder="예: 마포 아파트 주방 도배" required></div>
+          <div class="field"><label for="status">진행 상태</label><input id="status" value="상담" readonly aria-describedby="status-help"><p id="status-help" class="help">신규 현장의 초기 상태입니다.</p></div>
+          <div class="field full-row"><label for="siteAddress">현장 주소 <span aria-hidden="true">*</span></label><input id="siteAddress" name="siteAddress" autocomplete="street-address" maxlength="200" placeholder="상세 주소를 포함해 입력하세요" required></div>
+        </div>
+      </section>
+      <div class="form-actions"><p id="registration-help" class="help">등록 버튼은 저장 기능이 연결될 때 활성화합니다.</p><a class="button" th:href="@{/projects}">취소</a><button class="button primary" type="submit" disabled>고객·현장 등록</button></div>
+    </form>
+  </main>
+</div>
+</body>
+</html>

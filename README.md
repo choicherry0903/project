@@ -1,7 +1,18 @@
 # 지붕과벽 CMS
 
-고객·현장 목록, 현장 상세, AI 상담 정리의 **화면 골격만** 준비한 프로젝트입니다.
-Java 25 / Spring Boot 4.0.8 / Maven Wrapper / Thymeleaf를 사용합니다.
+Java 25 / Spring Boot 4.0.8 / Spring MVC / Thymeleaf / Spring JDBC / Supabase PostgreSQL.
+
+## 현재 구현 범위
+
+- **목록 조회**: 기존 Supabase 고객·현장 테이블을 조인해 현장 ID 내림차순으로 표시
+- **목록 화면**: 현장명, 고객명, 연락처, 현장 주소, 진행 상태와 전체 건수
+- **등록 화면**: 고객명, 연락처, 현장명, 현장 주소 입력 및 목록/취소 이동
+- 현장 상세 및 AI 상담 정리: 기존 화면 골격 유지
+
+등록·수정·삭제 처리와 검색·파일 업로드·AI 호출은 구현하지 않았습니다.
+등록 버튼은 화면으로 이동하며, 등록 화면의 저장 버튼은 비활성입니다.
+상세 조회는 이번 범위가 아니므로 목록의 개별 행에 상세 링크를 연결하지 않았습니다.
+메뉴는 기존 세 개를 유지하고 등록 화면은 목록에서 진입합니다.
 
 ## 실행
 
@@ -11,47 +22,46 @@ Java 25 / Spring Boot 4.0.8 / Maven Wrapper / Thymeleaf를 사용합니다.
 .\scripts\run-local.ps1
 ```
 
-[고객·현장 목록](http://localhost:8080/projects)에서 시작합니다.
-기본값은 `dev` 프로필입니다. DB, 로그인, API 키, `.env` 설정이 필요 없습니다.
-서버는 로컬 확인용으로 `127.0.0.1:8080`에 열립니다. 종료는 실행 터미널에서 Ctrl+C입니다.
+- [고객·현장 목록](http://localhost:8080/projects)
+- [고객·현장 등록](http://localhost:8080/projects/new)
+- [현장 상세 골격](http://localhost:8080/projects/detail)
+- [AI 상담 정리 골격](http://localhost:8080/consultations/ai)
 
-IntelliJ에서는 Maven 프로젝트를 다시 로드하고 JDK 25를 지정한 뒤
-공유 실행 구성 **Interior CMS Local**을 사용하세요.
-이전 Demo / Supabase 실행 구성은 삭제했습니다.
+기본값은 dev 프로필이며 서버는 `127.0.0.1:8080`에 열립니다.
+JDK 25가 필요합니다. IntelliJ는 Maven 재로드 후 **Interior CMS Local**을 실행합니다.
 
-스크립트 없이 실행하려면 JDK 25의 `JAVA_HOME`을 지정한 뒤:
+## Supabase 연결
 
-```powershell
-.\mvnw.cmd spring-boot:run '-Dspring-boot.run.profiles=dev'
+프로젝트 루트의 기존 `.env`에서 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`를 읽습니다.
+DB_URL은 `jdbc:postgresql://...` 형식이며 비밀번호는 별도 키에 둡니다.
+환경 변수로도 설정할 수 있으며 실제 비밀값은 Git에 저장하지 않습니다.
+
+목록은 `interior_cms.construction_projects`와 `interior_cms.customers`를 읽습니다.
+자동 DDL, Flyway, 샘플 데이터 추가는 없으며 기존 테이블과 데이터를 변경하지 않습니다.
+보관 고객(`archived=true`)은 제외합니다.
+`로그인 직원의 company_id`에 해당하는 현장만 읽으며 세션의 직원 계정에서 업체 ID를 가져옵니다.
+로그인하지 않은 요청은 /login으로 이동합니다.
+업체 ID는 요청 파라미터나 환경 변수로 바꿀 수 없습니다.
+
+## 구조
+
+```text
+src/main/java/com/roofandwall/interior/project/
+  controller/ProjectListController.java
+  controller/ProjectRegistrationController.java
+  controller/ProjectDetailController.java
+  service/ProjectQueryService.java
+  repository/ProjectRepository.java
+  dto/ProjectListItem.java
+src/main/resources/templates/project/
+  list.html
+  form.html
+  detail.html
 ```
 
-## 화면과 파일
-
-| 화면 | 경로 | Controller | HTML |
-| --- | --- | --- | --- |
-| 고객·현장 목록 | `/projects` | `project/controller/ProjectListController.java` | `templates/project/list.html` |
-| 현장 상세 | `/projects/detail` | `project/controller/ProjectDetailController.java` | `templates/project/detail.html` |
-| AI 상담 정리 | `/consultations/ai` | `consultation/controller/AiConsultationController.java` | `templates/consultation/ai.html` |
-
-Java 파일의 기준 경로는 `src/main/java/com/roofandwall/interior/`,
-HTML 파일의 기준 경로는 `src/main/resources/`입니다.
-공통 메뉴는 `templates/layout/base.html`, 스타일은 `static/css/app.css`입니다.
-`/`는 목록으로 이동합니다. 상세 경로는 데이터 연결 전 화면 확인용 고정 경로입니다.
-
-검색·등록·저장·파일 업로드·AI 실행은 구현하지 않았으며 입력과 버튼은 비활성 상태입니다.
-예시 고객 데이터나 가짜 AI 결과도 표시하지 않습니다.
-Service, Repository, Entity, DTO는 실제 데이터와 기능 요구사항이 정해진 뒤 추가합니다.
-
-## 정리 범위
-
-기존 인증, 고객/현장 CRUD, 자재, 실측, 견적, 계약, 일정, 수금, AS 등의 구현과
-관련 테스트·템플릿·JS·DB 마이그레이션·연동 설정·문서를 제거했습니다.
-관련 Security, JPA, Flyway, DB 드라이버, SMTP, S3 및 이미지 처리 의존성도 제거했습니다.
-
-이전 코드는 Git 커밋 `ae4f547e310c222bbf3a46e6f0b455ed08edb4a7`에서 확인할 수 있습니다.
-실제 DB나 외부 저장소의 데이터를 삭제하는 작업은 수행하지 않았습니다.
-로컬 `.env`와 IDE 설정, 개발 도구 및 Maven 캐시는 보존하되 앱에서 `.env`를 읽지 않습니다.
-기존 마이그레이션을 그대로 운영 DB에 다시 적용하지 마세요. DB 연결은 이후 별도 설계가 필요합니다.
+목록은 Controller → 조회 Service → JDBC Repository → 기존 Supabase 테이블 순서로 읽습니다.
+등록 화면은 GET /projects/new만 있으며 POST 처리나 저장 쿼리는 없습니다.
+등록 기능을 이어서 만들 위치와 기존 DB 필수 컬럼은 [목록 개발 안내](docs/project-list.md)를 참고하세요.
 
 ## 검증
 
@@ -60,12 +70,21 @@ Service, Repository, Entity, DTO는 실제 데이터와 기능 요구사항이 �
 .\scripts\run-local.ps1 -Task package
 ```
 
-테스트/패키징은 `clean`부터 실행하여 이전 클래스와 리소스가 산출물에 남지 않도록 합니다.
-테스트는 세 화면의 실제 Thymeleaf 렌더링, 세 메뉴와 활성 표시, CSS 제공,
-이전 화면 제거 및 저장 경로 미구현 상태를 검증합니다.
-산출물: `target/interior-cms-0.0.1-SNAPSHOT.jar`.
+테스트는 `test` 프로필과 별도 메모리 H2를 사용하므로 Supabase 연결 설정이 없어도 실행됩니다.
+H2 드라이버와 테스트 스키마는 테스트 전용이며 실행 JAR에 포함하지 않습니다.
+조회·정렬·빈 목록·업체 범위·보관 고객 제외·HTML 이스케이프,
+등록 화면과 저장 미구현 상태, 기존 세 메뉴 및 화면 렌더링을 검증합니다.
+테스트 데이터는 테스트 트랜잭션으로만 삽입 후 롤백합니다.
+산출물은 `target/interior-cms-0.0.1-SNAPSHOT.jar`입니다.
 
-`dev`에서는 HTML/CSS 저장 후 새로고침으로 반영됩니다.
-Java 변경은 IDE 빌드 이후 DevTools가 재시작합니다.
+HTML/CSS는 dev 프로필에서 저장 후 새로고침, Java는 IDE 빌드 이후 DevTools 재시작으로 반영됩니다.
 
-다음 개발 범위는 [화면 구성](docs/screen-map.md)과 [구조](docs/architecture.md)를 참고하세요.
+## 로그인
+
+/login에서 기존 Supabase interior_cms.staff_accounts의 아이디와 비밀번호를 사용합니다.
+아이디는 앞뒤 공백과 대소문자를 구분하지 않으며 기존 BCrypt 해시를 검증합니다.
+비활성 계정 또는 이메일이 있으나 확인되지 않은 계정은 로그인할 수 없습니다.
+계정 생성·비밀번호 초기화·이메일 발송·회원가입은 추가하지 않았습니다.
+로그인 성공 후 /projects로 이동하며, 메뉴의 로그아웃 버튼으로 세션을 종료합니다.
+업무 화면은 로그인이 필요하고 조회 업체는 로그인 직원 계정의 company_id입니다.
+POST 요청은 CSRF 토큰이 필요합니다. 사용자명 표시와 로그아웃은 공통 메뉴에 포함됩니다.

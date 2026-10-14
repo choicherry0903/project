@@ -15,6 +15,10 @@
     <a th:href="@{/projects/detail}" th:classappend="${active == 'detail'} ? 'active'" th:attr="aria-current=${active == 'detail' ? 'page' : null}"><span class="nav-number">02</span>현장 상세</a>
     <a th:href="@{/consultations/ai}" th:classappend="${active == 'ai'} ? 'active'" th:attr="aria-current=${active == 'ai' ? 'page' : null}"><span class="nav-number">03</span>AI 상담 정리</a>
   </nav>
+  <div class="session-tools">
+    <p><strong th:text="${currentStaff.displayName}">직원</strong>님</p>
+    <form th:action="@{/logout}" method="post"><button class="button compact" type="submit">로그아웃</button></form>
+  </div>
   <div class="sidebar-note"><span class="status-dot"></span>초기 화면 구성<small>업무 흐름을 확인하는 단계입니다.</small></div>
 </aside>
 <div class="notice" th:fragment="notice"><strong>화면 준비 중</strong><span>입력 항목과 화면 구성을 확인할 수 있습니다. 조회·저장·AI 정리 기능은 아직 제공하지 않습니다.</span></div>
