@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EstimateItemRepository extends JpaRepository<EstimateItem, Long> {
     Optional<EstimateItem> findByIdAndCompanyId(Long id, Long companyId);
+    java.util.List<EstimateItem> findByCompanyIdAndEstimateIdOrderByIdAsc(Long companyId, Long estimateId);
 }

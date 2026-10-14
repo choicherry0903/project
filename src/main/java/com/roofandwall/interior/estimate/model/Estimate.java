@@ -54,6 +54,33 @@ public class Estimate extends BaseEntity {
     @Column()
     private Instant confirmedAt;
 
+    @Column(length = 36)
+    private String requestKey;
+
+    @Column(nullable = false)
+    private boolean archived;
+
+    @Column(nullable = false)
+    private long draftEditSequence;
+
+    public String getRequestKey() { return requestKey; }
+    public void setRequestKey(String requestKey) { this.requestKey = requestKey; }
+    public boolean isArchived() { return archived; }
+    public void archive() { archived = true; }
+
+    public void updateDraft(LocalDate validUntil, String scope, String excluded, Long discount,
+                            BigDecimal taxRate, Long supply, Long tax, Long total) {
+        this.validUntil = validUntil;
+        this.scopeOfWork = scope;
+        this.excludedWork = excluded;
+        this.discount = discount;
+        this.taxRate = taxRate;
+        this.supplyAmount = supply;
+        this.taxAmount = tax;
+        this.totalAmount = total;
+        draftEditSequence++;
+    }
+
     protected Estimate() {}
 
     public Estimate(
@@ -124,6 +151,10 @@ public class Estimate extends BaseEntity {
 
     public BigDecimal getTaxRate() {
         return taxRate;
+    }
+
+    public String getTaxRateLabel() {
+        return taxRate.multiply(BigDecimal.valueOf(100)).stripTrailingZeros().toPlainString() + "%";
     }
 
     public Long getSupplyAmount() {
