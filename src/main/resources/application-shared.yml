@@ -1,8 +1,0 @@
-# Use after the owner migrates: --spring.profiles.active=supabase,shared
-# Shared DB schema changes are applied by the DB owner, not every developer.
-spring:
-  flyway:
-    enabled: false
-  jpa:
-    hibernate:
-      ddl-auto: validate

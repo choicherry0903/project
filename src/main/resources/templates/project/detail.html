@@ -1,76 +1,23 @@
-<!doctype html>
-<html
-  lang="ko"
-  xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{layout/base :: layout('현장 상세', ~{::main})}"
->
-  <main>
-    <div class="page-heading">
-      <div>
-        <p class="eyebrow">PRJ-03 · PROJECT</p>
-        <h1 th:text="${project.name}"></h1>
-        <p>
-          <span
-            class="badge"
-            th:text="${project.statusLabel}"
-          ></span>
-          <a
-            th:href="@{/customers/{id}(id=${customer.id})}"
-            th:text="${customer.name}"
-          ></a>
-        </p>
-      </div>
-      <a
-        class="button secondary"
-        th:href="@{/projects/{id}/edit(id=${project.id})}"
-      >
-        정보 수정
-      </a>
-    </div>
-    <nav
-      class="tabs"
-      aria-label="현장 업무"
-    >
-      <a
-        class="active"
-        href="#details"
-      >
-        기본정보
-      </a>
-      <a th:href="@{/projects/{id}/survey(id=${project.id})}">실측</a>
-      <a th:href="@{/estimates}">견적</a>
-      <a th:href="@{/contracts}">계약</a>
-      <a th:href="@{/schedules}">일정</a>
-      <a th:href="@{/work-logs}">작업</a>
-      <a th:href="@{/payments}">정산</a>
-      <a th:href="@{/completion}">완료 점검</a>
-    </nav>
-    <section
-      class="panel"
-      id="details"
-    >
-      <h2>현장 기본정보</h2>
-      <dl class="details">
-        <dt>주소</dt>
-        <dd>
-          <span th:text="${project.address}"></span>
-          <span th:text="${project.detailAddress}"></span>
-        </dd>
-        <dt>공사 종류</dt>
-        <dd th:text="${project.constructionType}"></dd>
-        <dt>희망 시공일</dt>
-        <dd th:text="${project.desiredStartDate ?: '미정'}"></dd>
-        <dt>주거 유형</dt>
-        <dd th:text="${project.housingType ?: '미등록'}"></dd>
-        <dt>거주 여부</dt>
-        <dd th:text="${project.occupied ? '거주 중' : '공실'}"></dd>
-        <dt>주의사항</dt>
-        <dd
-          class="preserve-lines"
-          th:text="${project.siteNotes ?: '없음'}"
-        ></dd>
-      </dl>
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('현장 상세')}"></head>
+<body>
+<a class="skip-link" href="#main">본문으로 이동</a>
+<div class="app-shell">
+  <aside th:replace="~{layout/base :: sidebar('detail')}"></aside>
+  <main id="main" class="main-content">
+    <header class="page-header"><div><p class="eyebrow">한 현장의 업무 기록</p><h1>현장 상세</h1><p class="description">고객 정보, 상담 이력, 첨부 자료와 할 일을 한곳에 모읍니다.</p></div><a class="button" th:href="@{/projects}">목록으로</a></header>
+    <div th:replace="~{layout/base :: notice}"></div>
+    <section class="panel" aria-labelledby="info-title">
+      <div class="panel-heading"><h2 id="info-title">고객·현장 기본 정보</h2><button class="button compact" type="button" disabled>정보 수정</button></div>
+      <dl class="info-grid"><div><dt>현장명</dt><dd>등록 전</dd></div><div><dt>진행 상태</dt><dd>등록 전</dd></div><div><dt>고객명</dt><dd>등록 전</dd></div><div><dt>연락처</dt><dd>등록 전</dd></div><div><dt>현장 주소</dt><dd>등록 전</dd></div><div><dt>담당자</dt><dd>등록 전</dd></div><div><dt>공사 범위</dt><dd>등록 전</dd></div><div><dt>희망 일정</dt><dd>등록 전</dd></div></dl>
     </section>
-    <p class="muted">견적·일정·정산과 단계 변경은 후속 기능으로 준비 중입니다.</p>
+    <div class="detail-grid">
+      <section class="panel" aria-labelledby="history-title"><div class="panel-heading"><h2 id="history-title">상담 이력</h2><a class="text-link" th:href="@{/consultations/ai}">AI 상담 정리 →</a></div><div class="empty-state compact-empty"><h3>상담 기록을 연결할 공간</h3><p>고객 요청과 확인한 내용을 날짜별로 모읍니다.</p></div></section>
+      <section class="panel" aria-labelledby="tasks-title"><div class="panel-heading"><h2 id="tasks-title">다음 할 일</h2><button class="button compact" type="button" disabled>할 일 추가</button></div><div class="empty-state compact-empty"><h3>할 일을 연결할 공간</h3><p>담당자와 예정일을 함께 확인합니다.</p></div></section>
+    </div>
+    <section class="panel" aria-labelledby="files-title"><div class="panel-heading"><h2 id="files-title">파일·사진</h2><button class="button compact" type="button" disabled>파일 추가</button></div><div class="empty-state compact-empty"><h3>현장 자료를 연결할 공간</h3><p>견적 엑셀, 제안 PPT, 현장 사진을 모읍니다.</p></div></section>
   </main>
+</div>
+</body>
 </html>
