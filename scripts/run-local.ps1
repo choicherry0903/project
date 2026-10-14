@@ -31,7 +31,7 @@ try {
     }
     if (-not $env:MAVEN_USER_HOME) { $env:MAVEN_USER_HOME = Join-Path $projectRoot '.m2' }
     $repository = '-Dmaven.repo.local=' + (Join-Path $projectRoot '.m2/repository')
-    # No .env loading: the scaffold has no database or external API connection.
+    # Spring imports .env for Supabase; never evaluate its contents as shell code.
     if ($Task -eq 'run') {
         & ./mvnw.cmd $repository '-B' '-ntp' 'spring-boot:run' "-Dspring-boot.run.profiles=$Profile"
     } else {

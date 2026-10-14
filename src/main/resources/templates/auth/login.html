@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('로그인')}"></head>
+<body class="login-page">
+<main class="login-card">
+  <a class="brand" th:href="@{/login}"><span class="brand-mark" aria-hidden="true">집</span><span>지붕과벽<small>업무 관리</small></span></a>
+  <div class="login-heading"><p class="eyebrow">WORKSPACE</p><h1>로그인</h1><p class="description">직원 계정으로 업무 공간에 접속하세요.</p></div>
+  <p class="login-alert error-alert" role="alert" th:if="${param.error}">아이디 또는 비밀번호를 확인해 주세요. 계정 이용 상태에 문제가 있다면 관리자에게 문의해 주세요.</p>
+  <p class="login-alert" role="status" th:if="${param.logout}">로그아웃되었습니다.</p>
+  <form class="login-form" th:action="@{/login}" method="post">
+    <div class="field"><label for="username">아이디</label><input id="username" name="username" autocomplete="username" maxlength="254" placeholder="아이디를 입력하세요" required autofocus></div>
+    <div class="field"><label for="password">비밀번호</label><input id="password" name="password" type="password" autocomplete="current-password" placeholder="비밀번호를 입력하세요" required></div>
+    <button class="button primary full-width" type="submit">로그인</button>
+  </form>
+  <p class="login-help">기존 직원 계정을 사용해 주세요.<br>계정 발급 및 이용 문의는 관리자에게 연락해 주세요.</p>
+</main>
+</body>
+</html>

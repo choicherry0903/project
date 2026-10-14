@@ -1,11 +1,20 @@
 package com.roofandwall.interior.project.controller;
 
+import com.roofandwall.interior.project.service.ProjectQueryService;
+import com.roofandwall.interior.auth.service.StaffPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-/** 고객·현장 목록의 화면 경로만 제공한다. 조회·검색·등록은 이후 구현한다. */
 @Controller
 public class ProjectListController {
+
+    private final ProjectQueryService projectQueryService;
+
+    public ProjectListController(ProjectQueryService projectQueryService) {
+        this.projectQueryService = projectQueryService;
+    }
 
     @GetMapping("/")
     public String home() {
@@ -13,7 +22,8 @@ public class ProjectListController {
     }
 
     @GetMapping("/projects")
-    public String list() {
+    public String list(Model model, @AuthenticationPrincipal StaffPrincipal staff) {
+        model.addAttribute("projects", projectQueryService.findAll(staff.getCompanyId()));
         return "project/list";
     }
 }
