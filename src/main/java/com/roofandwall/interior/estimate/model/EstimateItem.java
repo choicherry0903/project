@@ -35,6 +35,17 @@ public class EstimateItem extends BaseEntity {
     @Column(length = 500)
     private String freeItemReason;
 
+    @Column(nullable = false)
+    private boolean quantityMissing;
+    @Column(nullable = false)
+    private boolean unitPriceMissing;
+    public boolean isQuantityMissing() { return quantityMissing; }
+    public boolean isUnitPriceMissing() { return unitPriceMissing; }
+    public void markIncomplete(boolean quantityMissing, boolean unitPriceMissing) {
+        this.quantityMissing = quantityMissing;
+        this.unitPriceMissing = unitPriceMissing;
+    }
+
     protected EstimateItem() {}
 
     public EstimateItem(

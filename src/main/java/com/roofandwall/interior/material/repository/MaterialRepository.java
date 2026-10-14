@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MaterialRepository extends JpaRepository<Material, Long> {
     Optional<Material> findByIdAndCompanyId(Long id, Long companyId);
+    java.util.List<Material> findByCompanyIdAndActiveTrueOrderByNameAsc(Long companyId);
 
     @org.springframework.data.jpa.repository.Query(
         "select m from Material m where m.companyId = :companyId and (:category = '' or m.category = :category) and (:subcategory = '' or m.subcategory = :subcategory) and (lower(m.name) like lower(concat('%', :keyword, '%')) or lower(m.brand) like lower(concat('%', :keyword, '%')))"

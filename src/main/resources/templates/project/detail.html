@@ -38,7 +38,7 @@
         기본정보
       </a>
       <a th:href="@{/projects/{id}/survey(id=${project.id})}">실측</a>
-      <a th:href="@{/estimates}">견적</a>
+      <a th:href="@{/estimates(projectId=${project.id})}">견적</a>
       <a th:href="@{/contracts}">계약</a>
       <a th:href="@{/schedules}">일정</a>
       <a th:href="@{/work-logs}">작업</a>
@@ -71,6 +71,6 @@
         ></dd>
       </dl>
     </section>
-    <p class="muted">견적·일정·정산과 단계 변경은 후속 기능으로 준비 중입니다.</p>
+    <p class="muted">견적 탭에서 현장 견적을 작성할 수 있습니다. 일정·정산과 단계 변경은 준비 중입니다.</p>
   </main>
 </html>

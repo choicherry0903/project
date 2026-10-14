@@ -16,6 +16,7 @@
 | PRJ-01 | /projects | ConstructionProjectController / project/list | 현장명·주소·상태 검색, 페이징. 고객명·기간 필터는 후속 |
 | PRJ-02 | /projects/new, /projects/{id}/edit | ConstructionProjectController / project/form | 고객 연결, 기본정보 등록·수정, 희망 시공일·현장 조건 |
 | PRJ-03 | /projects/{id} | ConstructionProjectController / project/detail | 기본정보와 업무 탭. 상태 전이·금액 요약·감사 이력은 후속 |
+| EST-01 | /estimates | EstimateController / estimate/* | 견적 초안 목록·등록·수정·삭제, 자재 복사, 서버 금액 계산 |
 | SUR-01 | /projects/{projectId}/survey | SurveyController / survey/* | 공간별 실측 등록·수정·조회, 벽/천장 면적 계산, 수정 이력 보존 |
 | MAT-01 | /materials | MaterialController / material/* | 자재 분류·품목 CRUD, 업체별 조회, 이미지 업로드·교체·삭제 |
 
@@ -32,7 +33,7 @@
 
 | 화면 ID | 화면 | 경로 | 컨트롤러 | View | 후속 구현 |
 | --- | --- | --- | --- | --- | --- |
-| EST-01 | 견적 작성 | `/estimates` | EstimateController | `estimate/form.html` | 항목별 수량·단가 입력, 서버 금액 계산, 초안 저장 |
+| EST-01 | 견적 확정·개정 (후속) | `/estimates` | EstimateController | `estimate/*` | 초안 CRUD 구현 완료. 관리자 확정·스냅샷·복제 개정은 후속 |
 | EST-02 | 견적 미리보기 | `/estimates/preview` | EstimatePreviewController | `estimate/preview.html` | 업체·고객 정보와 견적 버전을 보존한 PDF 출력 |
 | EST-03 | 견적 이력 | `/estimates/history` | EstimateHistoryController | `estimate/history.html` | 확정 견적 보존, 개정 사유와 버전별 조회 |
 | CON-01 | 계약 기록 | `/contracts` | ContractController | `contract/form.html` | 확정 견적 연결, 동의 기록, 계약금·중도금·잔금 계획 |
@@ -65,4 +66,4 @@
 8. 상태 전이·보류·취소와 감사 이력. 설계서 39쪽의 시나리오를 통합 테스트로 추가.
 9. 2차 기능: 발주·부분입고·실제 원가·A/S·사진 분류.
 
-실측 면적 계산은 실측 저장 화면에 연결했습니다. 롤 수량, 견적 계산, 일정의 시간 겹침은 독립 서비스와 테스트가 준비되어 있으며, 견적·일정 저장과 연결하는 것은 후속 작업입니다.
+실측 면적 계산은 실측 저장 화면에 연결했습니다. 롤 수량, 일정의 시간 겹침은 독립 서비스와 테스트가 준비되어 있습니다. 견적 계산은 초안 저장과 연결했습니다. 상세 범위는 [견적 초안 안내](estimate-management.md)를 참고하세요.

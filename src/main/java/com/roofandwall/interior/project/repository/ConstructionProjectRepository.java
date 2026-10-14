@@ -7,6 +7,10 @@ import org.springframework.data.jpa.repository.*;
 
 public interface ConstructionProjectRepository extends JpaRepository<ConstructionProject, Long> {
     Optional<ConstructionProject> findByIdAndCompanyId(Long id, Long companyId);
+    @Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from ConstructionProject p where p.id = :id and p.companyId = :companyId")
+    Optional<ConstructionProject> lockForEstimate(Long id, Long companyId);
+    List<ConstructionProject> findByCompanyIdOrderByNameAsc(Long companyId);
     Optional<ConstructionProject> findByRequestKeyAndCompanyId(String requestKey, Long companyId);
     List<ConstructionProject> findByCompanyIdAndCustomerIdOrderByUpdatedAtDesc(Long companyId, Long customerId);
     long countByCompanyId(Long companyId);

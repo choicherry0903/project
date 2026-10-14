@@ -743,3 +743,20 @@ textarea {
     padding: 38px 15px;
   }
 }
+
+/* Estimate draft editor */
+.estimate-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 28px; }
+.estimate-material-picker { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.estimate-material-picker label { margin: 0; }
+.estimate-material-picker select { flex: 1; min-width: 180px; margin: 0; }
+.estimate-items { min-width: 920px; }
+.estimate-items td { vertical-align: top; }
+.estimate-items input, .estimate-items select { margin-bottom: 8px; min-width: 75px; }
+.estimate-items td:nth-child(2) { min-width: 220px; }
+.estimate-items td:nth-child(5) { min-width: 135px; }
+.estimate-items output { display: block; padding-top: 12px; white-space: nowrap; }
+.estimate-adjustments { margin-top: 24px; }
+.estimate-totals { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 24px; margin-top: 24px; max-width: 500px; margin-left: auto; }
+.estimate-totals > div { display: flex; justify-content: space-between; gap: 20px; padding: 8px 0; }
+.estimate-grand-total { border-top: 1px solid var(--line); margin-top: 10px; font-size: 20px; }
+@media (max-width: 700px) { .estimate-section-heading { align-items: flex-start; flex-direction: column; } .estimate-totals { max-width: none; } }
