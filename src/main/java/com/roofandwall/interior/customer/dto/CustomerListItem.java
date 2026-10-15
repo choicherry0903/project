@@ -1,7 +1,7 @@
-package com.roofandwall.interior.project.dto;
+package com.roofandwall.interior.customer.dto;
 
 /** 목록에 필요한 조회 전용 데이터. 등록·수정용 객체와 분리한다. */
-public record ProjectListItem(
+public record CustomerListItem(
         long id,
         String projectName,
         String customerName,

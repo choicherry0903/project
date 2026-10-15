@@ -36,9 +36,9 @@ class ScreenScaffoldIntegrationTest {
 
     @ParameterizedTest
     @CsvSource({
-            "/projects, project/list, 고객·현장 목록",
-            "/projects/detail, project/detail, 현장 상세",
-            "/consultations/ai, consultation/ai, AI 상담 정리"
+            "/projects, customer/customer-list, 고객",
+            "/projects/detail, customer/customer-detail, 고객 상세",
+            "/consultations/ai, ai-counsult/ai-counsult, AI 상담 정리"
     })
     void rendersThreeScreensWithSharedNavigation(String path, String view, String title) throws Exception {
         String html = mvc.perform(get(path).with(TestStaff.signedIn()))

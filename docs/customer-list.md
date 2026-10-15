@@ -5,8 +5,8 @@
 | 요청 | 동작 |
 | --- | --- |
 | GET / | /projects로 이동 |
-| GET /projects | 기존 DB 목록 조회 후 project/list 렌더링 |
-| GET /projects/new | 입력용 project/form 렌더링 |
+| GET /projects | 기존 DB 목록 조회 후 customer/customer-list 렌더링 |
+| GET /projects/new | 입력용 customer/customer-registration 렌더링 |
 | GET /projects/detail | 기존 상세 화면 골격 유지 |
 
 목록은 전체 조회이며 현장 ID 내림차순입니다.
@@ -39,12 +39,12 @@ IN_PROGRESS=시공, COMPLETED=완료·AS, CANCELLED=취소.
 ## 사용자가 이어서 구현할 부분
 
 1. 등록 입력 DTO와 서버 검증: customerName, customerPhone, projectName, siteAddress
-2. POST /projects Controller 및 등록용 트랜잭션 Service
+2. CustomerController에 POST /projects 메서드 및 등록용 트랜잭션 Service 추가
 3. 기존 customers와 construction_projects에 맞는 INSERT 및 고객-현장 연결
 4. 성공 시 redirect:/projects, 실패 시 입력값과 오류 표시
 5. 등록 버튼 활성화, 수정·삭제 처리 및 UI
 
-form.html의 필드 name은 위 DTO 후보와 동일합니다.
+customer-registration.html의 필드 name은 위 DTO 후보와 동일합니다.
 현재 form action은 /projects, method는 post지만 저장 버튼은 disabled이며 처리 경로가 없습니다.
 입력 내용은 저장되지 않습니다.
 
@@ -55,6 +55,6 @@ request_key, archived(고객), construction_type, occupied, on_hold(현장) 등
 상태는 서버에서 CONSULTATION으로 지정하고,
 고객 생성/재사용 정책과 업체 범위도 등록 구현에서 확정하세요.
 
-ProjectRepository는 SELECT만 제공하며 ProjectQueryService는 readOnly 트랜잭션입니다.
+CustomerRepository는 SELECT만 제공하며 CustomerQueryService는 readOnly 트랜잭션입니다.
 등록용 Service와 SQL을 별도로 추가하면 됩니다.
 required/maxlength만으로 서버 검증을 대신할 수 없습니다.
