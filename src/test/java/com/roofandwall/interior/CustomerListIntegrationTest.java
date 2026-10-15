@@ -73,7 +73,7 @@ class CustomerListIntegrationTest {
 
     @Test
     void registrationScreenHasEditableFieldsAndDisabledSubmit() throws Exception {
-        String html = mvc.perform(get("/projects/new").with(TestStaff.signedIn()))
+        String html = mvc.perform(get("/projects/regform").with(TestStaff.signedIn()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("customer/customer-registration"))
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
