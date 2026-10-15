@@ -25,7 +25,7 @@ public class SecurityConfig {
                     .usernameParameter("username")
                     .passwordParameter("password")
                     .failureUrl("/login?error")
-                    .defaultSuccessUrl("/projects", true)
+                    .defaultSuccessUrl("/customers", true)
                     .permitAll())
                 .logout(logout -> logout
                     .logoutUrl("/logout")

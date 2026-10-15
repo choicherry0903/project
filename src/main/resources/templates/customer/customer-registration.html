@@ -8,10 +8,10 @@
   <main id="main" class="main-content">
     <header class="page-header">
       <div><p class="eyebrow">새로운 현장의 시작</p><h1>고객 등록</h1><p class="description">고객과 현장의 기본 정보를 입력하는 화면입니다.</p></div>
-      <a class="button" th:href="@{/projects}">목록으로</a>
+      <a class="button" th:href="@{/customers}">목록으로</a>
     </header>
     <div class="notice"><strong>등록 기능 준비 중</strong><span>입력 화면만 준비되어 있습니다. 입력한 내용은 저장되지 않으며, 등록 처리는 이후 연결합니다.</span></div>
-    <form th:action="@{/projects}" method="post" aria-describedby="registration-help">
+    <form th:action="@{/customers}" method="post" aria-describedby="registration-help">
       <section class="panel" aria-labelledby="customer-title">
         <div class="panel-heading"><h2 id="customer-title">고객 정보</h2><span class="badge">필수 항목 *</span></div>
         <div class="panel-body form-grid">
@@ -68,7 +68,7 @@
           <p id="consultation-row-status" class="sr-only" role="status" aria-live="polite"></p>
         </div>
       </section>
-      <div class="form-actions"><p id="registration-help" class="help">등록 버튼은 저장 기능이 연결될 때 활성화합니다.</p><a class="button" th:href="@{/projects}">취소</a><button class="button primary" type="submit" disabled>고객 등록</button></div>
+      <div class="form-actions"><button class="button primary" type="submit" th:href="@{/customers/insertCustomer}">고객 등록</button><a class="button" th:href="@{/customers}">취소</a></div>
     </form>
   </main>
 </div>

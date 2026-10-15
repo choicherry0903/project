@@ -18,20 +18,20 @@ public class CustomerController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/projects";
+        return "redirect:/customers";
     }
 
-    @GetMapping("/projects")
+    @GetMapping("/customers")
     public String list(Model model, @AuthenticationPrincipal StaffPrincipal staff) {
         model.addAttribute("projects", customerQueryService.findAll(staff.getCompanyId()));
         return "customer/customer-list";
     }
 
-    /** 등록 화면만 제공한다. 저장 처리는 아직 구현하지 않는다. */
-    @GetMapping("/projects/regform")
+    /** 등록 화면만 제공한다. */
+    @GetMapping("/customers/regform")
     public String regform(Model model, @AuthenticationPrincipal StaffPrincipal staff) {
-
 
         return "customer/customer-registration";
     }
+
 }

@@ -27,7 +27,7 @@ Repository는 SELECT만 제공하며 DTO CustomerListItem으로 반환합니다.
 - layout/base.html: 공통 head, 세 메뉴, 골격 화면용 안내
 - static/css/app.css: 공통 스타일과 반응형 목록/폼
 
-CustomerController에서 목록(GET /projects)과 등록 화면(GET /projects/new)을 함께 제공합니다.
+CustomerController에서 목록(GET /customers)과 등록 화면(GET /customers/regform)을 함께 제공합니다.
 등록/수정/삭제, 상세 조회, 검색, AI 실행은 이번 범위에 없습니다.
 
 ## 설정과 테스트

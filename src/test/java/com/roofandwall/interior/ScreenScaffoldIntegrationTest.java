@@ -31,14 +31,14 @@ class ScreenScaffoldIntegrationTest {
     void homeOpensProjectList() throws Exception {
         mvc.perform(get("/").with(TestStaff.signedIn()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/projects"));
+                .andExpect(redirectedUrl("/customers"));
     }
 
     @ParameterizedTest
     @CsvSource({
-            "/projects, customer/customer-list, 고객",
-            "/projects/detail, customer/customer-detail, 고객 상세",
-            "/consultations/ai, ai-counsult/ai-counsult, AI 상담 정리"
+            "/customers, customer/customer-list, 고객",
+            "/customers/detail, customer/customer-detail, 고객 상세",
+            "/aicounsult, ai-counsult/ai-counsult, AI 상담 정리"
     })
     void rendersThreeScreensWithSharedNavigation(String path, String view, String title) throws Exception {
         String html = mvc.perform(get(path).with(TestStaff.signedIn()))
@@ -50,20 +50,20 @@ class ScreenScaffoldIntegrationTest {
                 .andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
 
         String navigation = html.substring(html.indexOf("<nav"), html.indexOf("</nav>"));
-        assertThat(navigation).contains("href=\"/projects\"", "href=\"/projects/detail\"", "href=\"/consultations/ai\"");
+        assertThat(navigation).contains("href=\"/customers\"", "href=\"/customers/detail\"", "href=\"/aicounsult\"");
         assertThat(navigation.split("<a ", -1)).hasSize(4);
         assertThat(navigation.split("aria-current=\"page\"", -1)).hasSize(2);
         assertThat(html).doesNotContain("th:replace", "<script");
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/customers", "/materials", "/survey", "/estimates", "/settings"})
+    @ValueSource(strings = {"/projects", "/materials", "/survey", "/estimates", "/settings"})
     void oldScreensAreRemoved(String path) throws Exception {
         mvc.perform(get(path).with(TestStaff.signedIn())).andExpect(status().isNotFound());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/projects", "/projects/detail", "/consultations/ai"})
+    @ValueSource(strings = {"/customers", "/customers/detail", "/aicounsult"})
     void noBusinessSubmissionEndpointsExist(String path) throws Exception {
         mvc.perform(post(path).with(TestStaff.signedIn()).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())).andExpect(status().isMethodNotAllowed());
     }

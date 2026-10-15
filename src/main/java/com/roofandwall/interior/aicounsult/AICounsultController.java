@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class AICounsultController {
 
-    @GetMapping("/consultations/ai")
+    @GetMapping("/aicounsult")
     public String index() {
         return "ai-counsult/ai-counsult";
     }

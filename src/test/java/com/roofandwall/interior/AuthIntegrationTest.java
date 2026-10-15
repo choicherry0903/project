@@ -67,7 +67,7 @@ class AuthIntegrationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/", "/projects", "/projects/regform", "/projects/detail", "/consultations/ai"})
+    @ValueSource(strings = {"/", "/customers", "/customers/regform", "/customers/detail", "/aicounsult"})
     void businessScreensRequireLogin(String path) throws Exception {
         mvc.perform(get(path)).andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
@@ -77,7 +77,7 @@ class AuthIntegrationTest {
     void existingBcryptAccountLogsInCaseInsensitivelyAndScopesProjectsByStaffCompany() throws Exception {
         MockHttpSession session = (MockHttpSession) mvc.perform(formLogin().user(" OFFICE ").password(PASSWORD))
                 .andExpect(authenticated().withUsername("office"))
-                .andExpect(redirectedUrl("/projects"))
+                .andExpect(redirectedUrl("/customers"))
                 .andReturn().getRequest().getSession(false);
         SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
         assertThat(((StaffPrincipal) context.getAuthentication().getPrincipal()).getCompanyId()).isEqualTo(2);
@@ -92,10 +92,10 @@ class AuthIntegrationTest {
                 VALUES (1, 1, 1, '다른 업체 현장', '서울', 'CONSULTATION'),
                        (2, 2, 2, '우리 업체 현장', '서울', 'CONSULTATION')
                 """);
-        String html = mvc.perform(get("/projects").session(session))
+        String html = mvc.perform(get("/customers").session(session))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
         assertThat(html).contains("우리 업체 현장", "테스트 직원").doesNotContain("다른 업체 현장");
-        mvc.perform(get("/login").session(session)).andExpect(redirectedUrl("/projects"));
+        mvc.perform(get("/login").session(session)).andExpect(redirectedUrl("/customers"));
     }
 
     @ParameterizedTest

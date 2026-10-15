@@ -7,8 +7,8 @@
   <aside th:replace="~{layout/base :: sidebar('detail')}"></aside>
   <main id="main" class="main-content">
     <header class="page-header">
-      <div><p class="eyebrow"><a th:href="@{/projects}">고객</a> &gt; 상세</p><h1>고객 상세</h1><p class="description">상담부터 견적·계약, 시공과 검수까지 고객 한 건의 업무를 관리합니다.</p></div>
-      <a class="button" th:href="@{/projects}">고객 목록으로</a>
+      <div><p class="eyebrow"><a th:href="@{/customers}">고객</a> &gt; 상세</p><h1>고객 상세</h1><p class="description">상담부터 견적·계약, 시공과 검수까지 고객 한 건의 업무를 관리합니다.</p></div>
+      <a class="button" th:href="@{/customers}">고객 목록으로</a>
     </header>
     <div class="notice"><strong>상세 화면 미리보기</strong><span>실제 고객 정보가 아닌 빈 화면 구성입니다. 입력·수정·첨부·저장 기능은 아직 연결되지 않았습니다.</span></div>
 
@@ -40,7 +40,7 @@
 
     <div class="detail-grid">
       <section id="consultation" class="panel" aria-labelledby="consultation-title">
-        <div class="panel-heading"><h2 id="consultation-title"><span class="step">01</span>견적 및 상담</h2><a class="text-link" th:href="@{/consultations/ai}">AI 상담 정리 →</a></div>
+        <div class="panel-heading"><h2 id="consultation-title"><span class="step">01</span>견적 및 상담</h2><a class="text-link" th:href="@{/aicounsult}">AI 상담 정리 →</a></div>
         <div class="panel-body result-fields">
           <div class="field"><label for="consultation-date">상담일</label><input id="consultation-date" type="date" disabled></div>
           <div class="field"><label for="consultation-method">상담 방법</label><select id="consultation-method" disabled><option>선택 전</option><option>전화</option><option>방문</option><option>메신저</option></select></div>

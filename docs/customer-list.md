@@ -4,10 +4,10 @@
 
 | 요청 | 동작 |
 | --- | --- |
-| GET / | /projects로 이동 |
-| GET /projects | 기존 DB 목록 조회 후 customer/customer-list 렌더링 |
-| GET /projects/new | 입력용 customer/customer-registration 렌더링 |
-| GET /projects/detail | 기존 상세 화면 골격 유지 |
+| GET / | /customers로 이동 |
+| GET /customers | 기존 DB 목록 조회 후 customer/customer-list 렌더링 |
+| GET /customers/regform | 입력용 customer/customer-registration 렌더링 |
+| GET /customers/detail | 기존 상세 화면 골격 유지 |
 
 목록은 전체 조회이며 현장 ID 내림차순입니다.
 검색·페이지 분할·개별 상세 조회는 이번 범위에 없습니다.
@@ -39,13 +39,13 @@ IN_PROGRESS=시공, COMPLETED=완료·AS, CANCELLED=취소.
 ## 사용자가 이어서 구현할 부분
 
 1. 등록 입력 DTO와 서버 검증: customerName, customerPhone, projectName, siteAddress
-2. CustomerController에 POST /projects 메서드 및 등록용 트랜잭션 Service 추가
+2. CustomerController에 POST /customers 메서드 및 등록용 트랜잭션 Service 추가
 3. 기존 customers와 construction_projects에 맞는 INSERT 및 고객-현장 연결
-4. 성공 시 redirect:/projects, 실패 시 입력값과 오류 표시
+4. 성공 시 redirect:/customers, 실패 시 입력값과 오류 표시
 5. 등록 버튼 활성화, 수정·삭제 처리 및 UI
 
 customer-registration.html의 필드 name은 위 DTO 후보와 동일합니다.
-현재 form action은 /projects, method는 post지만 저장 버튼은 disabled이며 처리 경로가 없습니다.
+현재 form action은 /customers, method는 post지만 저장 버튼은 disabled이며 처리 경로가 없습니다.
 입력 내용은 저장되지 않습니다.
 
 기존 DB는 화면의 네 필드 외에도 company_id, created_at, updated_at,
