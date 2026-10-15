@@ -11,7 +11,7 @@
       <a class="button" th:href="@{/customers}">목록으로</a>
     </header>
     <div class="notice"><strong>등록 기능 준비 중</strong><span>입력 화면만 준비되어 있습니다. 입력한 내용은 저장되지 않으며, 등록 처리는 이후 연결합니다.</span></div>
-    <form th:action="@{/customers}" method="post" aria-describedby="registration-help">
+    <form th:action="@{/customers/insertCustomer}" method="post" aria-describedby="registration-help">
       <section class="panel" aria-labelledby="customer-title">
         <div class="panel-heading"><h2 id="customer-title">고객 정보</h2><span class="badge">필수 항목 *</span></div>
         <div class="panel-body form-grid">
@@ -68,7 +68,7 @@
           <p id="consultation-row-status" class="sr-only" role="status" aria-live="polite"></p>
         </div>
       </section>
-      <div class="form-actions"><button class="button primary" type="submit" th:href="@{/customers/insertCustomer}">등록</button><a class="button" th:href="@{/customers}">목록</a></div>
+      <div class="form-actions"><button class="button primary" id="insert-customer" type="submit" th:href="@{/customers/insertCustomer}">등록</button><a class="button" th:href="@{/customers}">목록</a></div>
     </form>
   </main>
 </div>
