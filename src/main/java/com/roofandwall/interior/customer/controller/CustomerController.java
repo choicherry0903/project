@@ -1,5 +1,6 @@
 package com.roofandwall.interior.customer.controller;
 
+import com.roofandwall.interior.customer.dto.CustomerItem;
 import com.roofandwall.interior.customer.service.CustomerQueryService;
 import com.roofandwall.interior.auth.service.StaffPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,7 +24,7 @@ public class CustomerController {
 
     @GetMapping("/customers")
     public String list(Model model, @AuthenticationPrincipal StaffPrincipal staff) {
-        model.addAttribute("projects", customerQueryService.findAll(staff.getCompanyId()));
+        model.addAttribute("result", customerQueryService.findAll(staff.getCompanyId()));
         return "customer/customer-list";
     }
 
@@ -32,6 +33,14 @@ public class CustomerController {
     public String regform(Model model, @AuthenticationPrincipal StaffPrincipal staff) {
 
         return "customer/customer-registration";
+    }
+
+    /** 저장 로직(등록)*/
+    @GetMapping("/customers/insertCustomer")
+    public String insertCustomer(Model model, @AuthenticationPrincipal StaffPrincipal staff, CustomerItem form) {
+        customerQueryService.insert(form);
+
+        return "customer/customer-list";
     }
 
 }

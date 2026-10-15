@@ -13,7 +13,7 @@ Java 패키지는 `com.roofandwall.interior`입니다.
 `CustomerController → CustomerQueryService → CustomerRepository → Supabase`
 
 기존 interior_cms 스키마의 construction_projects와 customers를 조인합니다.
-Repository는 SELECT만 제공하며 DTO CustomerListItem으로 반환합니다.
+Repository는 SELECT만 제공하며 DTO CustomerItem으로 반환합니다.
 조회 Service는 readOnly 트랜잭션으로 동작합니다.
 로그인 직원의 업체 ID로 제한하고 보관 고객은 제외합니다.
 템플릿은 th:text로 고객 입력을 이스케이프하고 빈 목록을 별도로 표시합니다.

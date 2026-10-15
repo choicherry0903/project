@@ -1,6 +1,6 @@
 package com.roofandwall.interior.customer.repository;
 
-import com.roofandwall.interior.customer.dto.CustomerListItem;
+import com.roofandwall.interior.customer.dto.CustomerItem;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -19,7 +19,7 @@ public class CustomerRepository {
 
     }
 
-    public List<CustomerListItem> findAll(long companyId) {
+    public List<CustomerItem> findAll(long companyId) {
         return jdbcClient.sql("""
                 SELECT p.id, p.name AS project_name,
                        c.name AS customer_name, c.phone AS customer_phone,
@@ -32,7 +32,7 @@ public class CustomerRepository {
                 ORDER BY p.id DESC
                 """)
                 .param("companyId", companyId)
-                .query((rs, rowNum) -> new CustomerListItem(
+                .query((rs, rowNum) -> new CustomerItem(
                         rs.getLong("id"),
                         rs.getString("project_name"),
                         rs.getString("customer_name"),
