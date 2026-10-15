@@ -23,10 +23,10 @@ Java 25 / Spring Boot 4.0.8 / Spring MVC / Thymeleaf / Spring JDBC / Supabase Po
 .\scripts\run-local.ps1
 ```
 
-- [고객](http://localhost:8080/projects)
-- [고객 등록](http://localhost:8080/projects/new)
-- [고객 상세 미리보기](http://localhost:8080/projects/detail)
-- [AI 상담 정리 골격](http://localhost:8080/consultations/ai)
+- [고객](http://localhost:8080/customers)
+- [고객 등록](http://localhost:8080/customers/regform)
+- [고객 상세 미리보기](http://localhost:8080/customers/detail)
+- [AI 상담 정리 골격](http://localhost:8080/aicounsult)
 
 기본값은 dev 프로필이며 서버는 `127.0.0.1:8080`에 열립니다.
 JDK 25가 필요합니다. IntelliJ는 Maven 재로드 후 **Interior CMS Local**을 실행합니다.
@@ -69,7 +69,7 @@ src/main/resources/templates/ai-counsult/
 컨트롤러는 메뉴마다 하나씩 두고, 목록·등록·수정·삭제 메서드를 같은 컨트롤러에서 관리합니다.
 
 목록은 Controller → 조회 Service → JDBC Repository → 기존 Supabase 테이블 순서로 읽습니다.
-등록 화면은 GET /projects/new만 있으며 POST 처리나 저장 쿼리는 없습니다.
+등록 화면은 GET /customers/regform만 있으며 POST 처리나 저장 쿼리는 없습니다.
 등록 기능을 이어서 만들 위치와 기존 DB 필수 컬럼은 [목록 개발 안내](docs/customer-list.md)를 참고하세요.
 
 ## 검증
@@ -94,6 +94,6 @@ HTML/CSS는 dev 프로필에서 저장 후 새로고침, Java는 IDE 빌드 이�
 아이디는 앞뒤 공백과 대소문자를 구분하지 않으며 기존 BCrypt 해시를 검증합니다.
 비활성 계정 또는 이메일이 있으나 확인되지 않은 계정은 로그인할 수 없습니다.
 계정 생성·비밀번호 초기화·이메일 발송·회원가입은 추가하지 않았습니다.
-로그인 성공 후 /projects로 이동하며, 메뉴의 로그아웃 버튼으로 세션을 종료합니다.
+로그인 성공 후 /customers로 이동하며, 메뉴의 로그아웃 버튼으로 세션을 종료합니다.
 업무 화면은 로그인이 필요하고 조회 업체는 로그인 직원 계정의 company_id입니다.
 POST 요청은 CSRF 토큰이 필요합니다. 사용자명 표시와 로그아웃은 공통 메뉴에 포함됩니다.

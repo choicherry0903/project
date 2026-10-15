@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class SceneController {
 
-    @GetMapping("/projects/detail")
+    @GetMapping("/customers/detail")
     public String detail() {
         return "customer/customer-detail";
     }

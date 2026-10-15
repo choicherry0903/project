@@ -42,7 +42,7 @@ class CustomerListIntegrationTest {
         insertFixture(1, 1, false, "첫 번째 현장", "기존 고객", "서울 마포구", null, "CONSULTATION");
         insertFixture(2, 1, false, "두 번째 현장", "<script>alert(1)</script>", "서울 성동구", "101호", "IN_PROGRESS");
 
-        String html = mvc.perform(get("/projects").with(TestStaff.signedIn()))
+        String html = mvc.perform(get("/customers").with(TestStaff.signedIn()))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("projects", hasSize(2)))
                 .andExpect(content().string(containsString("2건")))
@@ -58,14 +58,14 @@ class CustomerListIntegrationTest {
     void excludesOtherCompaniesAndArchivedCustomers() throws Exception {
         insertFixture(1, 2, false, "다른 업체 현장", "다른 업체 고객", "서울", null, "CONSULTATION");
         insertFixture(2, 1, true, "보관 현장", "보관 고객", "서울", null, "CONSULTATION");
-        mvc.perform(get("/projects").with(TestStaff.signedIn()))
+        mvc.perform(get("/customers").with(TestStaff.signedIn()))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("projects", hasSize(0)));
     }
 
     @Test
     void emptyDatabaseShowsEmptyState() throws Exception {
-        mvc.perform(get("/projects").with(TestStaff.signedIn()))
+        mvc.perform(get("/customers").with(TestStaff.signedIn()))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("projects", hasSize(0)))
                 .andExpect(content().string(containsString("등록된 현장이 없습니다")));
@@ -73,7 +73,7 @@ class CustomerListIntegrationTest {
 
     @Test
     void registrationScreenHasEditableFieldsAndDisabledSubmit() throws Exception {
-        String html = mvc.perform(get("/projects/regform").with(TestStaff.signedIn()))
+        String html = mvc.perform(get("/customers/regform").with(TestStaff.signedIn()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("customer/customer-registration"))
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
@@ -85,7 +85,7 @@ class CustomerListIntegrationTest {
 
     @Test
     void registrationPostHasNoHandlerAndDoesNotSave() throws Exception {
-        mvc.perform(post("/projects").with(TestStaff.signedIn()).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())
+        mvc.perform(post("/customers").with(TestStaff.signedIn()).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())
                         .param("customerName", "고객")
                         .param("customerPhone", "010-1234-5678")
                         .param("projectName", "현장")

@@ -8,7 +8,7 @@
   <main id="main" class="main-content">
     <header class="page-header">
       <div><p class="eyebrow">고객과 현장을 한곳에서</p><h1>고객</h1><p class="description">등록된 고객과 현장의 기본 정보를 확인합니다.</p></div>
-      <div class="form-actions"><a class="button" th:href="@{/projects/detail}">상세 화면 미리보기</a><a class="button primary" th:href="@{/projects/regform}">고객 등록</a></div>
+      <div class="form-actions"><a class="button" th:href="@{/customers/detail}">상세 화면 미리보기</a><a class="button primary" th:href="@{/customers/regform}">고객 등록</a></div>
     </header>
     <section class="panel" aria-labelledby="list-title">
       <div class="panel-heading"><h2 id="list-title">전체 현장</h2><span class="badge" th:text="|${#lists.size(projects)}건|">0건</span></div>
@@ -25,7 +25,7 @@
               <td><span class="badge" th:text="${project.statusLabel()}">상담</span></td>
             </tr>
             <tr th:if="${#lists.isEmpty(projects)}"><td colspan="5">
-              <div class="empty-state"><span class="empty-icon" aria-hidden="true">＋</span><h3>등록된 현장이 없습니다</h3><p>현장이 등록되면 고객 정보와 함께 이곳에 표시됩니다.</p><a class="text-link" th:href="@{/projects/regform}">등록 화면 보기 →</a></div>
+              <div class="empty-state"><span class="empty-icon" aria-hidden="true">＋</span><h3>등록된 현장이 없습니다</h3><p>현장이 등록되면 고객 정보와 함께 이곳에 표시됩니다.</p><a class="text-link" th:href="@{/customers/regform}">등록 화면 보기 →</a></div>
             </td></tr>
           </tbody>
         </table>
