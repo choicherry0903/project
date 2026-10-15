@@ -27,9 +27,99 @@
           <div class="field full-row"><label for="siteAddress">현장 주소 <span aria-hidden="true">*</span></label><input id="siteAddress" name="siteAddress" autocomplete="street-address" maxlength="200" placeholder="상세 주소를 포함해 입력하세요" required></div>
         </div>
       </section>
+      <section class="panel" aria-labelledby="consultation-title">
+        <div class="panel-heading">
+          <h2 id="consultation-title">상담 내용</h2>
+          <button id="add-consultation-row" class="button consultation-add" type="button" aria-label="상담 내용 행 추가" aria-controls="consultation-rows" title="상담 내용 행 추가">+</button>
+        </div>
+        <div class="panel-body">
+          <p id="consultation-help" class="help">상담 항목을 선택하고 내용을 입력해 주세요. 기타를 선택하면 항목명을 직접 입력할 수 있습니다. + 버튼으로 상담 내용을 추가할 수 있습니다.</p>
+          <div id="consultation-rows" class="consultation-rows">
+            <div class="consultation-row">
+              <div class="field">
+                <label for="consultation-category-0">상담 항목</label>
+                <select id="consultation-category-0" name="consultationItems[0].category" aria-describedby="consultation-help">
+                  <option value="샷시">01) 샷시</option>
+                  <option value="철거">02) 철거</option>
+                  <option value="확장">03) 확장</option>
+                  <option value="설비 (난방, 상수도, 하수도, A/C)">04) 설비 (난방, 상수도, 하수도, A/C)</option>
+                  <option value="목공">05) 목공</option>
+                  <option value="욕실">06) 욕실</option>
+                  <option value="타일">07) 타일</option>
+                  <option value="전기">08) 전기</option>
+                  <option value="필름, 현관철물">09) 필름, 현관철물</option>
+                  <option value="도배">10) 도배</option>
+                  <option value="바닥재">11) 바닥재</option>
+                  <option value="가구">12) 가구</option>
+                  <option value="탄성코트">13) 탄성코트</option>
+                  <option value="기타">기타 (직접 입력)</option>
+                </select>
+                <div class="field consultation-other" hidden>
+                  <label for="consultation-other-0">기타 항목명</label>
+                  <input id="consultation-other-0" name="consultationItems[0].customCategory" type="text" placeholder="항목명을 직접 입력하세요" disabled>
+                </div>
+              </div>
+              <div class="field">
+                <label for="consultation-content-0">상담 내용</label>
+                <input id="consultation-content-0" name="consultationItems[0].content" type="text" placeholder="선택한 항목의 상담 내용을 입력하세요">
+              </div>
+            </div>
+          </div>
+          <p id="consultation-row-status" class="sr-only" role="status" aria-live="polite"></p>
+        </div>
+      </section>
       <div class="form-actions"><p id="registration-help" class="help">등록 버튼은 저장 기능이 연결될 때 활성화합니다.</p><a class="button" th:href="@{/projects}">취소</a><button class="button primary" type="submit" disabled>고객 등록</button></div>
     </form>
   </main>
 </div>
+<script>
+  (() => {
+    const rows = document.getElementById('consultation-rows');
+    const status = document.getElementById('consultation-row-status');
+
+    rows.addEventListener('change', (event) => {
+      if (!event.target.matches('select')) return;
+
+      const row = event.target.closest('.consultation-row');
+      const otherField = row.querySelector('.consultation-other');
+      const otherInput = otherField.querySelector('input');
+      const isOther = event.target.value === '기타';
+
+      otherField.hidden = !isOther;
+      otherInput.disabled = !isOther;
+      otherInput.required = isOther;
+      if (isOther) otherInput.focus();
+    });
+
+    document.getElementById('add-consultation-row').addEventListener('click', () => {
+      const index = rows.children.length;
+      const row = rows.firstElementChild.cloneNode(true);
+      const select = row.querySelector('select');
+      const input = row.querySelector('input[name$=".content"]');
+      const otherField = row.querySelector('.consultation-other');
+      const otherInput = otherField.querySelector('input');
+
+      select.id = `consultation-category-${index}`;
+      select.name = `consultationItems[${index}].category`;
+      select.selectedIndex = 0;
+      row.querySelector('label[for^="consultation-category-"]').htmlFor = select.id;
+      otherInput.id = `consultation-other-${index}`;
+      otherInput.name = `consultationItems[${index}].customCategory`;
+      otherInput.value = '';
+      otherInput.disabled = true;
+      otherInput.required = false;
+      otherField.hidden = true;
+      row.querySelector('label[for^="consultation-other-"]').htmlFor = otherInput.id;
+      input.id = `consultation-content-${index}`;
+      input.name = `consultationItems[${index}].content`;
+      input.value = '';
+      row.querySelector('label[for^="consultation-content-"]').htmlFor = input.id;
+
+      rows.appendChild(row);
+      select.focus();
+      status.textContent = `상담 내용 ${index + 1}행이 추가되었습니다.`;
+    });
+  })();
+</script>
 </body>
 </html>

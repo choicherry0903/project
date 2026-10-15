@@ -67,7 +67,7 @@ class AuthIntegrationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/", "/projects", "/projects/new", "/projects/detail", "/consultations/ai"})
+    @ValueSource(strings = {"/", "/projects", "/projects/regform", "/projects/detail", "/consultations/ai"})
     void businessScreensRequireLogin(String path) throws Exception {
         mvc.perform(get(path)).andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
