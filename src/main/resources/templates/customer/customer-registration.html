@@ -73,53 +73,85 @@
   </main>
 </div>
 <script>
-  (() => {
-    const rows = document.getElementById('consultation-rows');
-    const status = document.getElementById('consultation-row-status');
+  const consultationRows = document.getElementById('consultation-rows');
+  const consultationRowStatus = document.getElementById('consultation-row-status');
 
-    rows.addEventListener('change', (event) => {
-      if (!event.target.matches('select')) return;
+  // 이벤트 연결은 한곳에서 관리합니다. 새 행의 선택 변경도 이벤트 위임으로 처리합니다.
+  function initializeConsultationForm() {
 
-      const row = event.target.closest('.consultation-row');
-      const otherField = row.querySelector('.consultation-other');
-      const otherInput = otherField.querySelector('input');
-      const isOther = event.target.value === '기타';
+    // 행 추가
+    document.getElementById('add-consultation-row')
+      .addEventListener('click', addConsultationRow);
 
-      otherField.hidden = !isOther;
-      otherInput.disabled = !isOther;
-      otherInput.required = isOther;
-      if (isOther) otherInput.focus();
-    });
+    // 선택항목 변경
+    consultationRows.addEventListener('change', handleConsultationCategoryChange);
+  }
 
-    document.getElementById('add-consultation-row').addEventListener('click', () => {
-      const index = rows.children.length;
-      const row = rows.firstElementChild.cloneNode(true);
-      const select = row.querySelector('select');
-      const input = row.querySelector('input[name$=".content"]');
-      const otherField = row.querySelector('.consultation-other');
-      const otherInput = otherField.querySelector('input');
+  // 선택한 행의 기타 항목명만 표시하거나 숨깁니다. 기존 입력값은 유지합니다.
+  function handleConsultationCategoryChange(event) {
+    const categorySelect = event.target;
+    if (!categorySelect.matches('select')) return;
 
-      select.id = `consultation-category-${index}`;
-      select.name = `consultationItems[${index}].category`;
-      select.selectedIndex = 0;
-      row.querySelector('label[for^="consultation-category-"]').htmlFor = select.id;
-      otherInput.id = `consultation-other-${index}`;
-      otherInput.name = `consultationItems[${index}].customCategory`;
-      otherInput.value = '';
-      otherInput.disabled = true;
-      otherInput.required = false;
-      otherField.hidden = true;
-      row.querySelector('label[for^="consultation-other-"]').htmlFor = otherInput.id;
-      input.id = `consultation-content-${index}`;
-      input.name = `consultationItems[${index}].content`;
-      input.value = '';
-      row.querySelector('label[for^="consultation-content-"]').htmlFor = input.id;
+    const row = categorySelect.closest('.consultation-row');
+    const otherCategoryField = row.querySelector('.consultation-other');
+    const otherCategoryInput = otherCategoryField.querySelector('input');
+    const isOtherCategory = categorySelect.value === '기타';
 
-      rows.appendChild(row);
-      select.focus();
-      status.textContent = `상담 내용 ${index + 1}행이 추가되었습니다.`;
-    });
-  })();
+    otherCategoryField.hidden = !isOtherCategory;
+    otherCategoryInput.disabled = !isOtherCategory;
+    otherCategoryInput.required = isOtherCategory;
+
+    if (isOtherCategory) {
+      otherCategoryInput.focus();
+    }
+  }
+
+  // 첫 행을 복사하되 기존 상담 내용은 복사하지 않습니다.
+  function addConsultationRow() {
+    const rowIndex = consultationRows.children.length;
+    const newRow = consultationRows.firstElementChild.cloneNode(true);
+
+    setConsultationRowFieldNames(newRow, rowIndex);
+    resetConsultationRow(newRow);
+    consultationRows.appendChild(newRow);
+
+    newRow.querySelector('select').focus();
+    consultationRowStatus.textContent = `상담 내용 ${rowIndex + 1}행이 추가되었습니다.`;
+  }
+
+  // 각 행의 id, name과 label 연결을 고유하게 지정합니다.
+  function setConsultationRowFieldNames(row, rowIndex) {
+    const categorySelect = row.querySelector('select');
+    const otherCategoryInput = row.querySelector('.consultation-other input');
+    const contentInput = row.querySelector('input[name$=".content"]');
+
+    categorySelect.id = `consultation-category-${rowIndex}`;
+    categorySelect.name = `consultationItems[${rowIndex}].category`;
+    row.querySelector('label[for^="consultation-category-"]').htmlFor = categorySelect.id;
+
+    otherCategoryInput.id = `consultation-other-${rowIndex}`;
+    otherCategoryInput.name = `consultationItems[${rowIndex}].customCategory`;
+    row.querySelector('label[for^="consultation-other-"]').htmlFor = otherCategoryInput.id;
+
+    contentInput.id = `consultation-content-${rowIndex}`;
+    contentInput.name = `consultationItems[${rowIndex}].content`;
+    row.querySelector('label[for^="consultation-content-"]').htmlFor = contentInput.id;
+  }
+
+  // 새 행은 첫 번째 항목 선택, 내용 비움, 기타 입력칸 숨김 상태로 시작합니다.
+  function resetConsultationRow(row) {
+    const otherCategoryField = row.querySelector('.consultation-other');
+    const otherCategoryInput = otherCategoryField.querySelector('input');
+
+    row.querySelector('select').selectedIndex = 0;
+    row.querySelector('input[name$=".content"]').value = '';
+    otherCategoryInput.value = '';
+    otherCategoryInput.disabled = true;
+    otherCategoryInput.required = false;
+    otherCategoryField.hidden = true;
+  }
+
+  initializeConsultationForm();
 </script>
 </body>
 </html>
