@@ -42,4 +42,10 @@ public class CustomerRepository {
                 ))
                 .list();
     }
+
+
+    //등록 쿼리
+    public void insertCustomer(CustomerItem form) {
+
+    }
 }

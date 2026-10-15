@@ -21,7 +21,7 @@ public class CustomerQueryService {
         return customerRepository.findAll(companyId);
     }
 
-    public void insert(CustomerItem form) {
-
+    public void insertCustomer(CustomerItem form) {
+        customerRepository.insertCustomer(form);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class CustomerController {
@@ -36,9 +37,9 @@ public class CustomerController {
     }
 
     /** 저장 로직(등록)*/
-    @GetMapping("/customers/insertCustomer")
+    @PostMapping("/customers/insertCustomer")
     public String insertCustomer(Model model, @AuthenticationPrincipal StaffPrincipal staff, CustomerItem form) {
-        customerQueryService.insert(form);
+        customerQueryService.insertCustomer(form);
 
         return "customer/customer-list";
     }
