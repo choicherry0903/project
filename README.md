@@ -51,7 +51,7 @@ src/main/java/com/roofandwall/interior/customer/
   controller/CustomerController.java
   service/CustomerQueryService.java
   repository/CustomerRepository.java
-  dto/CustomerListItem.java
+  dto/CustomerItem.java
 src/main/java/com/roofandwall/interior/scene/
   controller/SceneController.java
 src/main/java/com/roofandwall/interior/aicounsult/

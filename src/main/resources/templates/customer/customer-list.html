@@ -11,20 +11,20 @@
       <div class="form-actions"><a class="button" th:href="@{/customers/detail}">상세 화면 미리보기</a><a class="button primary" th:href="@{/customers/regform}">고객 등록</a></div>
     </header>
     <section class="panel" aria-labelledby="list-title">
-      <div class="panel-heading"><h2 id="list-title">전체 현장</h2><span class="badge" th:text="|${#lists.size(projects)}건|">0건</span></div>
+      <div class="panel-heading"><h2 id="list-title">전체 현장</h2><span class="badge" th:text="|${#lists.size(result)}건|">0건</span></div>
       <div class="table-scroll">
         <table>
           <caption class="sr-only">고객</caption>
           <thead><tr><th scope="col">현장명</th><th scope="col">고객</th><th scope="col">연락처</th><th scope="col">현장 주소</th><th scope="col">진행 상태</th></tr></thead>
           <tbody>
-            <tr class="project-row" th:each="project : ${projects}">
+            <tr class="project-row" th:each="project : ${result}">
               <td class="project-name" th:text="${project.projectName}">현장명</td>
               <td th:text="${project.customerName}">고객명</td>
               <td class="nowrap" th:text="${project.customerPhone}">연락처</td>
               <td class="address-cell" th:text="${project.siteAddress}">현장 주소</td>
               <td><span class="badge" th:text="${project.statusLabel()}">상담</span></td>
             </tr>
-            <tr th:if="${#lists.isEmpty(projects)}"><td colspan="5">
+            <tr th:if="${#lists.isEmpty(result)}"><td colspan="5">
               <div class="empty-state"><span class="empty-icon" aria-hidden="true">＋</span><h3>등록된 현장이 없습니다</h3><p>현장이 등록되면 고객 정보와 함께 이곳에 표시됩니다.</p><a class="text-link" th:href="@{/customers/regform}">등록 화면 보기 →</a></div>
             </td></tr>
           </tbody>
