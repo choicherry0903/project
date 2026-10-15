@@ -11,8 +11,8 @@
   <a class="brand" th:href="@{/projects}"><span class="brand-mark" aria-hidden="true">집</span><span>지붕과벽<small>업무 관리</small></span></a>
   <p class="nav-label">WORKSPACE</p>
   <nav aria-label="주요 메뉴">
-    <a th:href="@{/projects}" th:classappend="${active == 'list'} ? 'active'" th:attr="aria-current=${active == 'list' ? 'page' : null}"><span class="nav-number">01</span>고객·현장 목록</a>
-    <a th:href="@{/projects/detail}" th:classappend="${active == 'detail'} ? 'active'" th:attr="aria-current=${active == 'detail' ? 'page' : null}"><span class="nav-number">02</span>현장 상세</a>
+    <a th:href="@{/projects}" th:classappend="${active == 'list'} ? 'active'" th:attr="aria-current=${active == 'list' ? 'page' : null}"><span class="nav-number">01</span>고객</a>
+    <a th:href="@{/projects/detail}" th:classappend="${active == 'detail'} ? 'active'" th:attr="aria-current=${active == 'detail' ? 'page' : null}"><span class="nav-number">02</span>고객 상세</a>
     <a th:href="@{/consultations/ai}" th:classappend="${active == 'ai'} ? 'active'" th:attr="aria-current=${active == 'ai' ? 'page' : null}"><span class="nav-number">03</span>AI 상담 정리</a>
   </nav>
   <div class="session-tools">

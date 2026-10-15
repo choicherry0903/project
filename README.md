@@ -7,7 +7,8 @@ Java 25 / Spring Boot 4.0.8 / Spring MVC / Thymeleaf / Spring JDBC / Supabase Po
 - **목록 조회**: 기존 Supabase 고객·현장 테이블을 조인해 현장 ID 내림차순으로 표시
 - **목록 화면**: 현장명, 고객명, 연락처, 현장 주소, 진행 상태와 전체 건수
 - **등록 화면**: 고객명, 연락처, 현장명, 현장 주소 입력 및 목록/취소 이동
-- 현장 상세 및 AI 상담 정리: 기존 화면 골격 유지
+- 고객 상세: 상담·견적·계약·자재·시공·검수와 수금 현황의 HTML 미리보기
+- AI 상담 정리: 기존 화면 골격 유지
 
 등록·수정·삭제 처리와 검색·파일 업로드·AI 호출은 구현하지 않았습니다.
 등록 버튼은 화면으로 이동하며, 등록 화면의 저장 버튼은 비활성입니다.
@@ -22,9 +23,9 @@ Java 25 / Spring Boot 4.0.8 / Spring MVC / Thymeleaf / Spring JDBC / Supabase Po
 .\scripts\run-local.ps1
 ```
 
-- [고객·현장 목록](http://localhost:8080/projects)
-- [고객·현장 등록](http://localhost:8080/projects/new)
-- [현장 상세 골격](http://localhost:8080/projects/detail)
+- [고객](http://localhost:8080/projects)
+- [고객 등록](http://localhost:8080/projects/new)
+- [고객 상세 미리보기](http://localhost:8080/projects/detail)
 - [AI 상담 정리 골격](http://localhost:8080/consultations/ai)
 
 기본값은 dev 프로필이며 서버는 `127.0.0.1:8080`에 열립니다.
@@ -46,22 +47,30 @@ DB_URL은 `jdbc:postgresql://...` 형식이며 비밀번호는 별도 키에 둡
 ## 구조
 
 ```text
-src/main/java/com/roofandwall/interior/project/
-  controller/ProjectListController.java
-  controller/ProjectRegistrationController.java
-  controller/ProjectDetailController.java
-  service/ProjectQueryService.java
-  repository/ProjectRepository.java
-  dto/ProjectListItem.java
-src/main/resources/templates/project/
-  list.html
-  form.html
-  detail.html
+src/main/java/com/roofandwall/interior/customer/
+  controller/CustomerController.java
+  service/CustomerQueryService.java
+  repository/CustomerRepository.java
+  dto/CustomerListItem.java
+src/main/java/com/roofandwall/interior/scene/
+  controller/SceneController.java
+src/main/java/com/roofandwall/interior/aicounsult/
+  controller/AICounsultController.java
+src/main/resources/templates/customer/
+  customer-list.html
+  customer-registration.html
+  customer-detail.html
+src/main/resources/templates/ai-counsult/
+  ai-counsult.html
 ```
+
+메뉴별 Java 파일 접두어는 `Customer`, `Scene`, `AICounsult`로 구분합니다.
+고객 HTML 파일은 `customer` 폴더에서 목록·등록·상세로 구분합니다.
+컨트롤러는 메뉴마다 하나씩 두고, 목록·등록·수정·삭제 메서드를 같은 컨트롤러에서 관리합니다.
 
 목록은 Controller → 조회 Service → JDBC Repository → 기존 Supabase 테이블 순서로 읽습니다.
 등록 화면은 GET /projects/new만 있으며 POST 처리나 저장 쿼리는 없습니다.
-등록 기능을 이어서 만들 위치와 기존 DB 필수 컬럼은 [목록 개발 안내](docs/project-list.md)를 참고하세요.
+등록 기능을 이어서 만들 위치와 기존 DB 필수 컬럼은 [목록 개발 안내](docs/customer-list.md)를 참고하세요.
 
 ## 검증
 

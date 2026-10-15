@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         TransactionalTestExecutionListener.class
 }, inheritListeners = false)
 @Transactional
-class ProjectListIntegrationTest {
+class CustomerListIntegrationTest {
 
     @Autowired
     private MockMvc mvc;
@@ -75,7 +75,7 @@ class ProjectListIntegrationTest {
     void registrationScreenHasEditableFieldsAndDisabledSubmit() throws Exception {
         String html = mvc.perform(get("/projects/new").with(TestStaff.signedIn()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("project/form"))
+                .andExpect(view().name("customer/customer-registration"))
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         assertThat(html).contains("name=\"customerName\"", "name=\"customerPhone\"",
                 "name=\"projectName\"", "name=\"siteAddress\"", "type=\"submit\" disabled");

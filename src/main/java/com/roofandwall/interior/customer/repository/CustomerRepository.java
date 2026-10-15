@@ -1,6 +1,6 @@
-package com.roofandwall.interior.project.repository;
+package com.roofandwall.interior.customer.repository;
 
-import com.roofandwall.interior.project.dto.ProjectListItem;
+import com.roofandwall.interior.customer.dto.CustomerListItem;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -9,17 +9,17 @@ import java.util.List;
 
 /** 기존 Supabase 테이블을 조회한다. 데이터/스키마 변경 쿼리는 포함하지 않는다. */
 @Repository
-public class ProjectRepository {
+public class CustomerRepository {
 
     private final JdbcClient jdbcClient;
 
 
-    public ProjectRepository(JdbcClient jdbcClient) {
+    public CustomerRepository(JdbcClient jdbcClient) {
         this.jdbcClient = jdbcClient;
 
     }
 
-    public List<ProjectListItem> findAll(long companyId) {
+    public List<CustomerListItem> findAll(long companyId) {
         return jdbcClient.sql("""
                 SELECT p.id, p.name AS project_name,
                        c.name AS customer_name, c.phone AS customer_phone,
@@ -32,7 +32,7 @@ public class ProjectRepository {
                 ORDER BY p.id DESC
                 """)
                 .param("companyId", companyId)
-                .query((rs, rowNum) -> new ProjectListItem(
+                .query((rs, rowNum) -> new CustomerListItem(
                         rs.getLong("id"),
                         rs.getString("project_name"),
                         rs.getString("customer_name"),
