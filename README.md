@@ -6,13 +6,14 @@ Java 25 / Spring Boot 4.0.8 / Spring MVC / Thymeleaf / Spring JDBC / Supabase Po
 
 - **목록 조회**: 기존 Supabase 고객·현장 테이블을 조인해 현장 ID 내림차순으로 표시
 - **목록 화면**: 현장명, 고객명, 연락처, 현장 주소, 진행 상태와 전체 건수
-- **등록 화면**: 고객명, 연락처, 현장명, 현장 주소 입력 및 목록/취소 이동
-- 고객 상세: 상담·견적·계약·자재·시공·검수와 수금 현황의 HTML 미리보기
+- **등록 화면**: 고객명, 연락처, 현장명, 주소와 상담 항목 입력·검증·저장
+- 고객 상세: 목록의 현장명을 클릭해 고객·현장·상담 항목 조회, 등록과 같은 필드의 읽기 전용 화면
 - AI 상담 정리: 기존 화면 골격 유지
 
-등록·수정·삭제 처리와 검색·파일 업로드·AI 호출은 구현하지 않았습니다.
-등록 버튼은 화면으로 이동하며, 등록 화면의 저장 버튼은 비활성입니다.
-상세 조회는 이번 범위가 아니므로 목록의 개별 행에 상세 링크를 연결하지 않았습니다.
+고객·현장·상담 항목 등록과 수정·고객 삭제(보관)를 지원합니다. 검색·파일 업로드·AI 호출은 구현하지 않았습니다.
+등록 화면에서 고객·현장·상담을 함께 저장하며, 상담 행을 추가하거나 삭제할 수 있습니다.
+상세 조회는 /customers/detail?projectId=현장ID에서 제공합니다. 상세의 수정·삭제 버튼으로 편집하거나 삭제 확인 화면에 진입합니다.
+삭제하면 해당 고객의 모든 현장이 숨겨지며 기존 기록은 보관됩니다. 수정·삭제는 기존 version 컬럼으로 변경 충돌을 감지합니다.
 메뉴는 기존 세 개를 유지하고 등록 화면은 목록에서 진입합니다.
 
 ## 실행
@@ -25,7 +26,7 @@ Java 25 / Spring Boot 4.0.8 / Spring MVC / Thymeleaf / Spring JDBC / Supabase Po
 
 - [고객](http://localhost:8080/customers)
 - [고객 등록](http://localhost:8080/customers/regform)
-- [고객 상세 미리보기](http://localhost:8080/customers/detail)
+- [고객 상세 선택 안내](http://localhost:8080/customers/detail)
 - [AI 상담 정리 골격](http://localhost:8080/aicounsult)
 
 기본값은 dev 프로필이며 서버는 `127.0.0.1:8080`에 열립니다.
@@ -38,7 +39,7 @@ DB_URL은 `jdbc:postgresql://...` 형식이며 비밀번호는 별도 키에 둡
 환경 변수로도 설정할 수 있으며 실제 비밀값은 Git에 저장하지 않습니다.
 
 목록은 `interior_cms.construction_projects`와 `interior_cms.customers`를 읽습니다.
-자동 DDL, Flyway, 샘플 데이터 추가는 없으며 기존 테이블과 데이터를 변경하지 않습니다.
+자동 DDL과 Flyway는 비활성입니다. 추가 상담 항목 테이블 DDL은 docs/sql에 있으며, 등록 시 고객·현장·상담 항목을 저장합니다.
 보관 고객(`archived=true`)은 제외합니다.
 `로그인 직원의 company_id`에 해당하는 현장만 읽으며 세션의 직원 계정에서 업체 ID를 가져옵니다.
 로그인하지 않은 요청은 /login으로 이동합니다.
@@ -69,7 +70,7 @@ src/main/resources/templates/ai-counsult/
 컨트롤러는 메뉴마다 하나씩 두고, 목록·등록·수정·삭제 메서드를 같은 컨트롤러에서 관리합니다.
 
 목록은 Controller → 조회 Service → JDBC Repository → 기존 Supabase 테이블 순서로 읽습니다.
-등록 화면은 GET /customers/regform만 있으며 POST 처리나 저장 쿼리는 없습니다.
+등록은 GET /customers/regform과 POST /customers/insertCustomer로 처리합니다.
 등록 기능을 이어서 만들 위치와 기존 DB 필수 컬럼은 [목록 개발 안내](docs/customer-list.md)를 참고하세요.
 
 ## 검증
@@ -82,7 +83,7 @@ src/main/resources/templates/ai-counsult/
 테스트는 `test` 프로필과 별도 메모리 H2를 사용하므로 Supabase 연결 설정이 없어도 실행됩니다.
 H2 드라이버와 테스트 스키마는 테스트 전용이며 실행 JAR에 포함하지 않습니다.
 조회·정렬·빈 목록·업체 범위·보관 고객 제외·HTML 이스케이프,
-등록 화면과 저장 미구현 상태, 기존 세 메뉴 및 화면 렌더링을 검증합니다.
+등록 저장·검증·중복 방지·실패 시 롤백, 기존 세 메뉴 및 화면 렌더링을 검증합니다.
 테스트 데이터는 테스트 트랜잭션으로만 삽입 후 롤백합니다.
 산출물은 `target/interior-cms-0.0.1-SNAPSHOT.jar`입니다.
 

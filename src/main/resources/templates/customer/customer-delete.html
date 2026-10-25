@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('고객 삭제')}"></head>
+<body>
+<a class="skip-link" href="#main">본문으로 이동</a>
+<div class="app-shell">
+  <aside th:replace="~{layout/base :: sidebar('detail')}"></aside>
+  <main id="main" class="main-content">
+    <header class="page-header"><div><h1>고객 삭제</h1><p class="description">삭제할 고객과 연결된 현장을 확인해 주세요.</p></div></header>
+    <section class="panel">
+      <div class="panel-heading"><h2 th:text="${form.customerName}">고객명</h2><span th:text="${form.projectName}">현장명</span></div>
+      <div class="panel-body">
+        <p>삭제하면 이 고객의 모든 현장이 목록과 상세 조회에서 숨겨집니다. 기존 고객·현장·상담 기록은 보관됩니다.</p>
+        <form th:action="@{/customers/{id}/delete(id=${projectId})}" method="post" th:object="${form}">
+          <input type="hidden" th:field="*{customerVersion}">
+          <input type="hidden" th:field="*{projectVersion}">
+          <div class="notice error-alert" role="alert" th:if="${#fields.hasAnyErrors()}"><ul><li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li></ul></div>
+          <label><input type="checkbox" name="confirmed" value="true" required> 이 고객과 연결된 모든 현장이 숨겨지는 것을 확인했습니다.</label>
+          <div class="form-actions"><button class="button" type="submit">고객 삭제</button><a class="button" th:href="@{/customers/detail(projectId=${projectId})}">취소</a></div>
+        </form>
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>
