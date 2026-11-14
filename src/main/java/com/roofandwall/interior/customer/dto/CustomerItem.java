@@ -7,6 +7,10 @@ import java.util.List;
 public class CustomerItem {
 
     private long id;
+    private long customerId;
+    private Long customerVersion;
+    private Long projectVersion;
+    private String requestKey;
     private String customerName;
     private String customerPhone;
     private String projectName;
@@ -32,6 +36,19 @@ public class CustomerItem {
     public long getId() {
         return id;
     }
+
+    public Long getCustomerVersion() { return customerVersion; }
+    public void setCustomerVersion(Long customerVersion) { this.customerVersion = customerVersion; }
+    public Long getProjectVersion() { return projectVersion; }
+    public void setProjectVersion(Long projectVersion) { this.projectVersion = projectVersion; }
+
+    public String getRequestKey() { return requestKey; }
+
+    public long getCustomerId() { return customerId; }
+
+    public void setCustomerId(long customerId) { this.customerId = customerId; }
+
+    public void setRequestKey(String requestKey) { this.requestKey = requestKey; }
 
     public void setId(long id) {
         this.id = id;

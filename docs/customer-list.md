@@ -1,60 +1,61 @@
-# 목록 조회와 등록 화면 개발 안내
-
-## 완료된 경로
+# 고객 목록과 등록
 
 | 요청 | 동작 |
 | --- | --- |
-| GET / | /customers로 이동 |
-| GET /customers | 기존 DB 목록 조회 후 customer/customer-list 렌더링 |
-| GET /customers/regform | 입력용 customer/customer-registration 렌더링 |
-| GET /customers/detail | 기존 상세 화면 골격 유지 |
+| GET /customers | 로그인 업체의 고객·현장 목록 |
+| GET /customers/regform | 등록 폼과 새 요청 키 생성 |
+| POST /customers/insertCustomer | 검증 후 고객·현장·상담 항목 저장 |
+| GET /customers/detail?projectId=현장ID | 업체 범위 안의 고객·현장·상담 상세 조회 |
+| GET /customers/{projectId}/edit | 기존 정보를 채운 수정 폼 |
+| POST /customers/{projectId}/edit | 고객·선택 현장·상담 항목 수정 |
+| GET /customers/{projectId}/delete | 고객 삭제 확인 화면 |
+| POST /customers/{projectId}/delete | 확인 후 고객 보관 처리 |
 
-목록은 전체 조회이며 현장 ID 내림차순입니다.
-검색·페이지 분할·개별 상세 조회는 이번 범위에 없습니다.
+목록은 interior_cms.construction_projects와 interior_cms.customers를 고객 ID와 업체 ID로 조인합니다.
+보관 고객은 제외하고 현장 ID 내림차순으로 표시합니다.
 
-## 기존 DB 조회
+## 등록
 
-`interior_cms.construction_projects p`와 `interior_cms.customers c`를
-`p.customer_id = c.id AND p.company_id = c.company_id`로 조인합니다.
-`p.company_id = 로그인 직원의 company_id`이며 보관되지 않은 고객만 표시합니다.
-주소는 address와 detail_address를 합칩니다.
+- 고객명 50자, 연락처 15자, 현장명 100자, 주소 200자 이내이며 모두 필수입니다.
+- 서버에서 공백을 정리하고 필수값·최대 길이·상담 항목을 검증합니다.
+- 상담은 최대 100행입니다. 내용 없는 기본 행은 저장하지 않습니다.
+- 기타 항목명은 100자, 상담 내용은 2,000자 이내입니다. 기타 상담을 작성하면 항목명도 필요합니다.
+- 업체 ID와 상담 작성자 ID는 로그인 직원에게서 가져옵니다.
+- 고객 생성 ID로 현장과 상담 항목을 연결하고 하나의 쓰기 트랜잭션에서 저장합니다.
+- 현장은 CONSULTATION(상담), 공사 종류는 미정, occupied/on_hold는 FALSE로 시작합니다.
+- 성공 시 목록으로 리다이렉트하며 실패 시 입력값·상담 행·요청 키를 유지하고 오류를 표시합니다.
+- 폼의 고정 UUID와 기존 request_key 고유 제약으로 같은 요청의 재전송과 동시 제출을 처리합니다.
+  새 폼에서 같은 고객을 다시 입력하는 경우는 별도 등록입니다.
 
-| 표시 항목 | 실제 컬럼 |
-| --- | --- |
-| 현장 ID | p.id |
-| 현장명 | p.name, 최대 100자 |
-| 고객명 | c.name, 최대 50자 |
-| 연락처 | c.phone, 최대 15자 |
-| 현장 주소 | p.address + p.detail_address, 각 최대 200자 |
-| 상태 | p.status |
+## 상담 테이블
 
-기존 상태를 그대로 해석합니다: CONSULTATION=상담,
-SURVEY_SCHEDULED=현장 확인 예정, ESTIMATING=견적, CONTRACTED=계약,
-IN_PROGRESS=시공, COMPLETED=완료·AS, CANCELLED=취소.
+interior_cms.customer_consultation_items에 category, custom_category, content, sort_order를 분리해 저장합니다.
+고객 및 작성자와의 외래 키에는 업체 ID도 포함합니다.
+findConsultationItems(companyId, customerId)는 고객 테이블과 조인하고 보관 고객을 제외합니다.
+기존 consultations 데이터는 변경하지 않습니다.
 
-앱은 SELECT만 수행하며 자동 테이블 생성/마이그레이션은 비활성입니다.
-테스트용 최소 스키마는 src/test/resources/test-schema.sql에만 있습니다.
-이는 운영 테이블 생성용 DDL이 아닙니다.
+추가 테이블 DDL: [상담 항목 테이블](sql/2026-10-16-customer-consultation-items.sql).
+현재 연결된 DB에 적용했습니다. 다른 DB에는 이 SQL을 먼저 적용해야 합니다.
+애플리케이션의 자동 DDL/마이그레이션은 비활성입니다.
 
-## 사용자가 이어서 구현할 부분
+상세 화면은 등록과 같은 항목을 읽기 전용으로 표시하며 수정·삭제 버튼을 제공합니다. 현장을 선택하지 않으면 목록 선택 안내를 표시하고, 다른 업체·보관 고객·없는 현장은 조회·수정·삭제 모두 404를 반환합니다. 견적서 및 PDF 출력, 검색은 아직 구현하지 않았습니다.
 
-1. 등록 입력 DTO와 서버 검증: customerName, customerPhone, projectName, siteAddress
-2. CustomerController에 POST /customers 메서드 및 등록용 트랜잭션 Service 추가
-3. 기존 customers와 construction_projects에 맞는 INSERT 및 고객-현장 연결
-4. 성공 시 redirect:/customers, 실패 시 입력값과 오류 표시
-5. 등록 버튼 활성화, 수정·삭제 처리 및 UI
+## 수정·삭제
 
-customer-registration.html의 필드 name은 위 DTO 후보와 동일합니다.
-현재 form action은 /customers, method는 post지만 저장 버튼은 disabled이며 처리 경로가 없습니다.
-입력 내용은 저장되지 않습니다.
+- 수정은 등록 폼을 재사용하며 같은 입력 검증을 적용합니다. 성공하면 상세로 이동합니다.
+- 고객명·연락처·상담 내용은 고객 단위로 공유하고 현장명·주소는 선택한 현장만 변경합니다.
+- 주소는 상세 주소를 포함한 한 필드로 편집하고, 저장 시 address에 통합하며 detail_address를 비웁니다.
+- 진행 상태·공사 종류·거주 여부·보류 여부는 유지합니다.
+- 상담 행은 현재 입력한 순서로 교체하며 전체 삭제도 가능합니다. 새 상담 행의 작성자는 저장한 로그인 직원입니다.
+- 고객·현장·상담 수정은 하나의 트랜잭션이며 실패하면 전체 롤백합니다. 오류 시 입력값을 유지합니다.
+- 기존 version 컬럼으로 중복 제출과 변경 충돌을 감지합니다. 충돌 시 최신 정보를 다시 불러와야 합니다.
+- 삭제 확인 화면에서 동의해야 POST로 삭제할 수 있습니다. 모든 변경 POST에는 CSRF 토큰이 필요합니다.
+- 삭제는 customers.archived=true로 처리합니다. 해당 고객의 모든 현장이 목록·상세에서 숨겨지고 고객·현장·상담 기록은 보관됩니다. 복원 UI는 제공하지 않습니다.
+- 기존 컬럼을 사용하므로 수정·삭제를 위한 추가 DB 마이그레이션은 없습니다.
 
-기존 DB는 화면의 네 필드 외에도 company_id, created_at, updated_at,
-request_key, archived(고객), construction_type, occupied, on_hold(현장) 등
-필수 컬럼이 있으므로 등록 Service에서 적절한 값을 제공해야 합니다.
-스키마를 간소화하거나 필수 제약을 삭제하지 않았습니다.
-상태는 서버에서 CONSULTATION으로 지정하고,
-고객 생성/재사용 정책과 업체 범위도 등록 구현에서 확정하세요.
+## 검증
 
-CustomerRepository는 SELECT만 제공하며 CustomerQueryService는 readOnly 트랜잭션입니다.
-등록용 Service와 SQL을 별도로 추가하면 됩니다.
-required/maxlength만으로 서버 검증을 대신할 수 없습니다.
+H2의 테스트 전용 스키마로 등록, 목록 표시, 업체 범위, 중복 요청과 동시 제출,
+검증 오류 시 입력 복원, 저장 실패 시 전체 롤백, 수정·상담 교체, 변경 충돌,
+삭제 확인과 보관 처리, 다른 업체의 변경 차단 및 CSRF를 검증합니다.
+테스트는 실제 Supabase 고객 데이터를 저장하거나 변경하지 않습니다.

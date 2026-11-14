@@ -44,7 +44,7 @@ class CustomerListIntegrationTest {
 
         String html = mvc.perform(get("/customers").with(TestStaff.signedIn()))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("projects", hasSize(2)))
+                .andExpect(model().attribute("result", hasSize(2)))
                 .andExpect(content().string(containsString("2건")))
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
@@ -52,6 +52,7 @@ class CustomerListIntegrationTest {
         assertThat(html).contains("010-1234-5678", "서울 성동구 101호", "상담", "시공");
         assertThat(html).contains("&lt;script&gt;alert(1)&lt;/script&gt;").doesNotContain("<script>alert(1)</script>");
         assertThat(html).doesNotContain("등록된 현장이 없습니다");
+        assertThat(html).contains("href=\"/customers/detail?projectId=2\"");
     }
 
     @Test
@@ -60,27 +61,28 @@ class CustomerListIntegrationTest {
         insertFixture(2, 1, true, "보관 현장", "보관 고객", "서울", null, "CONSULTATION");
         mvc.perform(get("/customers").with(TestStaff.signedIn()))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("projects", hasSize(0)));
+                .andExpect(model().attribute("result", hasSize(0)));
     }
 
     @Test
     void emptyDatabaseShowsEmptyState() throws Exception {
         mvc.perform(get("/customers").with(TestStaff.signedIn()))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("projects", hasSize(0)))
+                .andExpect(model().attribute("result", hasSize(0)))
                 .andExpect(content().string(containsString("등록된 현장이 없습니다")));
     }
 
     @Test
-    void registrationScreenHasEditableFieldsAndDisabledSubmit() throws Exception {
+    void registrationScreenHasEditableFieldsAndRequestKey() throws Exception {
         String html = mvc.perform(get("/customers/regform").with(TestStaff.signedIn()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("customer/customer-registration"))
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         assertThat(html).contains("name=\"customerName\"", "name=\"customerPhone\"",
-                "name=\"projectName\"", "name=\"siteAddress\"", "type=\"submit\" disabled");
-        assertThat(html).contains("입력한 내용은 저장되지 않으며");
+                "name=\"projectName\"", "name=\"siteAddress\"", "name=\"requestKey\"");
+        assertThat(html).doesNotContain("type=\"submit\" disabled", "입력한 내용은 저장되지 않으며");
         assertThat(projectCount()).isZero();
+        java.nio.file.Files.writeString(java.nio.file.Path.of("target/registration-preview.html"), html);
     }
 
     @Test

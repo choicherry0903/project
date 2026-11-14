@@ -8,7 +8,7 @@
   <main id="main" class="main-content">
     <header class="page-header">
       <div><p class="eyebrow">고객과 현장을 한곳에서</p><h1>고객</h1><p class="description">등록된 고객과 현장의 기본 정보를 확인합니다.</p></div>
-      <div class="form-actions"><a class="button" th:href="@{/customers/detail}">상세 화면 미리보기</a><a class="button primary" th:href="@{/customers/regform}">고객 등록</a></div>
+      <div class="form-actions"><a class="button primary" th:href="@{/customers/regform}">고객 등록</a></div>
     </header>
     <section class="panel" aria-labelledby="list-title">
       <div class="panel-heading"><h2 id="list-title">전체 현장</h2><span class="badge" th:text="|${#lists.size(result)}건|">0건</span></div>
@@ -18,7 +18,7 @@
           <thead><tr><th scope="col">현장명</th><th scope="col">고객</th><th scope="col">연락처</th><th scope="col">현장 주소</th><th scope="col">진행 상태</th></tr></thead>
           <tbody>
             <tr class="project-row" th:each="project : ${result}">
-              <td class="project-name" th:text="${project.projectName}">현장명</td>
+              <td class="project-name"><a class="text-link" th:href="@{/customers/detail(projectId=${project.id})}" th:text="${project.projectName}">현장명</a></td>
               <td th:text="${project.customerName}">고객명</td>
               <td class="nowrap" th:text="${project.customerPhone}">연락처</td>
               <td class="address-cell" th:text="${project.siteAddress}">현장 주소</td>

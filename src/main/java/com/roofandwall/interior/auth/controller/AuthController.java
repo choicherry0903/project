@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AuthController {
     @GetMapping("/login")
     public String login(Principal principal) {
-        return principal == null ? "auth/login" : "redirect:/customers";
+        return principal == null ? "auth/login" : "redirect:/aicounsult";
     }
 }

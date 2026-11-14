@@ -1,30 +1,37 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/base :: head('고객 등록')}"></head>
+<head th:replace="~{layout/base :: head(${editing == true ? '고객 수정' : '고객 등록'})}"></head>
 <body>
 <a class="skip-link" href="#main">본문으로 이동</a>
 <div class="app-shell">
   <aside th:replace="~{layout/base :: sidebar('list')}"></aside>
   <main id="main" class="main-content">
     <header class="page-header">
-      <div><p class="eyebrow">새로운 현장의 시작</p><h1>고객 등록</h1><p class="description">고객과 현장의 기본 정보를 입력하는 화면입니다.</p></div>
+      <div><p class="eyebrow">새로운 현장의 시작</p><h1 th:text="${editing == true ? '고객 수정' : '고객 등록'}">고객 등록</h1><p class="description">고객과 현장의 기본 정보를 입력하는 화면입니다.</p></div>
       <a class="button" th:href="@{/customers}">목록으로</a>
     </header>
-    <div class="notice"><strong>등록 기능 준비 중</strong><span>입력 화면만 준비되어 있습니다. 입력한 내용은 저장되지 않으며, 등록 처리는 이후 연결합니다.</span></div>
-    <form th:action="@{/customers/insertCustomer}" method="post" aria-describedby="registration-help">
+    <div class="notice" th:if="${editing == true}"><span>고객 정보와 상담 내용은 이 고객의 모든 현장에 함께 반영됩니다. 현장명과 주소는 선택한 현장만 수정합니다.</span><a class="button" th:href="@{/customers/{id}/edit(id=${projectId})}">최신 정보 다시 불러오기</a></div>
+    <div th:unless="${editing == true}" id="registration-help" class="notice"><span>고객·현장과 입력한 상담 내용을 함께 저장합니다. 공사 종류는 미정, 거주 여부와 보류 여부는 아니요로 시작합니다.</span></div>
+    <form id="customer-registration-form" th:action="${editing == true} ? @{/customers/{id}/edit(id=${projectId})} : @{/customers/insertCustomer}" method="post" th:object="${form}" th:attr="aria-describedby=${editing == true ? null : 'registration-help'}">
+      <input th:if="${editing == true}" type="hidden" th:field="*{customerVersion}">
+      <input th:if="${editing == true}" type="hidden" th:field="*{projectVersion}">
+      <input th:unless="${editing == true}" type="hidden" name="requestKey" th:value="${form.requestKey}">
+      <div class="notice error-alert" role="alert" th:if="${#fields.hasAnyErrors()}">
+        <ul><li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li></ul>
+      </div>
       <section class="panel" aria-labelledby="customer-title">
         <div class="panel-heading"><h2 id="customer-title">고객 정보</h2><span class="badge">필수 항목 *</span></div>
         <div class="panel-body form-grid">
-          <div class="field"><label for="customerName">고객명 <span aria-hidden="true">*</span></label><input id="customerName" name="customerName" autocomplete="name" maxlength="50" placeholder="고객명을 입력하세요" required></div>
-          <div class="field"><label for="customerPhone">연락처 <span aria-hidden="true">*</span></label><input id="customerPhone" name="customerPhone" type="tel" autocomplete="tel" maxlength="15" placeholder="010-0000-0000" required></div>
+          <div class="field"><label for="customerName">고객명 <span aria-hidden="true">*</span></label><input id="customerName" name="customerName" th:field="*{customerName}" autocomplete="name" maxlength="50" placeholder="고객명을 입력하세요" required></div>
+          <div class="field"><label for="customerPhone">연락처 <span aria-hidden="true">*</span></label><input id="customerPhone" name="customerPhone" th:field="*{customerPhone}" type="tel" autocomplete="tel" maxlength="15" placeholder="010-0000-0000" required></div>
         </div>
       </section>
       <section class="panel" aria-labelledby="project-title">
         <div class="panel-heading"><h2 id="project-title">현장 정보</h2></div>
         <div class="panel-body form-grid">
-          <div class="field"><label for="projectName">현장명 <span aria-hidden="true">*</span></label><input id="projectName" name="projectName" maxlength="100" placeholder="예: 마포 아파트 주방 도배" required></div>
-          <div class="field"><label for="status">진행 상태</label><input id="status" value="상담" readonly aria-describedby="status-help"><p id="status-help" class="help">신규 현장의 초기 상태입니다.</p></div>
-          <div class="field full-row"><label for="siteAddress">현장 주소 <span aria-hidden="true">*</span></label><input id="siteAddress" name="siteAddress" autocomplete="street-address" maxlength="200" placeholder="상세 주소를 포함해 입력하세요" required></div>
+          <div class="field"><label for="projectName">현장명 <span aria-hidden="true">*</span></label><input id="projectName" name="projectName" th:field="*{projectName}" maxlength="100" placeholder="예: 마포 아파트 주방 도배" required></div>
+          <div class="field"><label for="status">진행 상태</label><input id="status" th:value="${editing == true ? form.statusLabel() : '상담'}" value="상담" readonly aria-describedby="status-help"><p id="status-help" class="help">진행 상태는 이 화면에서 변경하지 않습니다.</p></div>
+          <div class="field full-row"><label for="siteAddress">현장 주소 <span aria-hidden="true">*</span></label><input id="siteAddress" name="siteAddress" th:field="*{siteAddress}" autocomplete="street-address" maxlength="200" placeholder="상세 주소를 포함해 입력하세요" required></div>
         </div>
       </section>
       <section class="panel" aria-labelledby="consultation-title">
@@ -33,48 +40,56 @@
           <button id="add-consultation-row" class="button consultation-add" type="button" aria-label="상담 내용 행 추가" aria-controls="consultation-rows" title="상담 내용 행 추가">+</button>
         </div>
         <div class="panel-body">
-          <p id="consultation-help" class="help">상담 항목을 선택하고 내용을 입력해 주세요. 기타를 선택하면 항목명을 직접 입력할 수 있습니다. + 버튼으로 상담 내용을 추가할 수 있습니다.</p>
+          <p id="consultation-help" class="help">상담 항목을 선택하고 내용을 입력해 주세요. 기타를 선택하면 항목명을 직접 입력할 수 있습니다. + 버튼으로 행을 추가하고 각 행의 − 버튼으로 삭제할 수 있습니다.</p>
           <div id="consultation-rows" class="consultation-rows">
-            <div class="consultation-row">
-              <div class="field">
-                <label for="consultation-category-0">상담 항목</label>
-                <select id="consultation-category-0" name="consultationItems[0].category" aria-describedby="consultation-help">
-                  <option value="샷시">01) 샷시</option>
-                  <option value="철거">02) 철거</option>
-                  <option value="확장">03) 확장</option>
-                  <option value="설비 (난방, 상수도, 하수도, A/C)">04) 설비 (난방, 상수도, 하수도, A/C)</option>
-                  <option value="목공">05) 목공</option>
-                  <option value="욕실">06) 욕실</option>
-                  <option value="타일">07) 타일</option>
-                  <option value="전기">08) 전기</option>
-                  <option value="필름, 현관철물">09) 필름, 현관철물</option>
-                  <option value="도배">10) 도배</option>
-                  <option value="바닥재">11) 바닥재</option>
-                  <option value="가구">12) 가구</option>
-                  <option value="탄성코트">13) 탄성코트</option>
-                  <option value="기타">기타 (직접 입력)</option>
-                </select>
-                <div class="field consultation-other" hidden>
-                  <label for="consultation-other-0">기타 항목명</label>
-                  <input id="consultation-other-0" name="consultationItems[0].customCategory" type="text" placeholder="항목명을 직접 입력하세요" disabled>
-                </div>
-              </div>
-              <div class="field">
-                <label for="consultation-content-0">상담 내용</label>
-                <input id="consultation-content-0" name="consultationItems[0].content" type="text" placeholder="선택한 항목의 상담 내용을 입력하세요">
-              </div>
-            </div>
+            <th:block th:each="item, rowStat : *{consultationItems}">
+              <div th:replace="~{::consultationRow(${item}, ${rowStat.index})}"></div>
+            </th:block>
           </div>
           <p id="consultation-row-status" class="sr-only" role="status" aria-live="polite"></p>
         </div>
       </section>
-      <div class="form-actions"><button class="button primary" id="insert-customer" type="submit" th:href="@{/customers/insertCustomer}">등록</button><a class="button" th:href="@{/customers}">목록</a></div>
+      <div class="form-actions"><button class="button primary" id="insert-customer" type="submit" th:text="${editing == true ? '수정 저장' : '등록'}">등록</button><a class="button" th:href="${editing == true} ? @{/customers/detail(projectId=${projectId})} : @{/customers}" th:text="${editing == true ? '취소' : '목록'}">목록</a></div>
     </form>
+    <template id="consultation-row-template" th:with="item=${emptyConsultation}, rowIndex=0">
+            <div class="consultation-row" th:fragment="consultationRow(item, rowIndex)">
+              <div class="field">
+                <label for="consultation-category-0" th:for="|consultation-category-${rowIndex}|">상담 항목</label>
+                <select id="consultation-category-0" th:id="|consultation-category-${rowIndex}|" name="consultationItems[0].category" th:name="|consultationItems[${rowIndex}].category|" aria-describedby="consultation-help">
+                  <option value="샷시" th:selected="${item.category == '샷시'}">01) 샷시</option>
+                  <option value="철거" th:selected="${item.category == '철거'}">02) 철거</option>
+                  <option value="확장" th:selected="${item.category == '확장'}">03) 확장</option>
+                  <option value="설비 (난방, 상수도, 하수도, A/C)" th:selected="${item.category == '설비 (난방, 상수도, 하수도, A/C)'}">04) 설비 (난방, 상수도, 하수도, A/C)</option>
+                  <option value="목공" th:selected="${item.category == '목공'}">05) 목공</option>
+                  <option value="욕실" th:selected="${item.category == '욕실'}">06) 욕실</option>
+                  <option value="타일" th:selected="${item.category == '타일'}">07) 타일</option>
+                  <option value="전기" th:selected="${item.category == '전기'}">08) 전기</option>
+                  <option value="필름, 현관철물" th:selected="${item.category == '필름, 현관철물'}">09) 필름, 현관철물</option>
+                  <option value="도배" th:selected="${item.category == '도배'}">10) 도배</option>
+                  <option value="바닥재" th:selected="${item.category == '바닥재'}">11) 바닥재</option>
+                  <option value="가구" th:selected="${item.category == '가구'}">12) 가구</option>
+                  <option value="탄성코트" th:selected="${item.category == '탄성코트'}">13) 탄성코트</option>
+                  <option value="기타" th:selected="${item.category == '기타'}">기타 (직접 입력)</option>
+                </select>
+                <div class="field consultation-other" th:hidden="${item.category != '기타'}">
+                  <label for="consultation-other-0" th:for="|consultation-other-${rowIndex}|">기타 항목명</label>
+                  <input id="consultation-other-0" th:id="|consultation-other-${rowIndex}|" name="consultationItems[0].customCategory" th:name="|consultationItems[${rowIndex}].customCategory|" th:value="${item.customCategory}" type="text" placeholder="항목명을 직접 입력하세요" maxlength="100" th:disabled="${item.category != '기타'}" th:required="${item.category == '기타'}">
+                </div>
+              </div>
+              <div class="field">
+                <label for="consultation-content-0" th:for="|consultation-content-${rowIndex}|">상담 내용</label>
+                <input id="consultation-content-0" th:id="|consultation-content-${rowIndex}|" name="consultationItems[0].content" th:name="|consultationItems[${rowIndex}].content|" th:value="${item.content}" type="text" placeholder="선택한 항목의 상담 내용을 입력하세요" maxlength="2000">
+              </div>
+              <button class="button consultation-remove" type="button" aria-label="상담 내용 1행 삭제" th:attr="aria-label=|상담 내용 ${rowIndex + 1}행 삭제|" title="이 행 삭제">−</button>
+            </div>
+    </template>
   </main>
 </div>
 <script>
   const consultationRows = document.getElementById('consultation-rows');
   const consultationRowStatus = document.getElementById('consultation-row-status');
+  // 모든 행을 삭제한 뒤에도 새 행을 추가할 수 있도록 원본을 보관합니다.
+  const consultationRowTemplate = document.getElementById('consultation-row-template').content.firstElementChild;
 
   // 이벤트 연결은 한곳에서 관리합니다. 새 행의 선택 변경도 이벤트 위임으로 처리합니다.
   function initializeConsultationForm() {
@@ -85,6 +100,14 @@
 
     // 선택항목 변경
     consultationRows.addEventListener('change', handleConsultationCategoryChange);
+    consultationRows.addEventListener('click', removeConsultationRow);
+    Array.from(consultationRows.children).forEach(setConsultationRowFieldNames);
+    document.getElementById('customer-registration-form').addEventListener('submit', () => {
+      document.getElementById('insert-customer').disabled = true;
+    });
+    window.addEventListener('pageshow', () => {
+      document.getElementById('insert-customer').disabled = false;
+    });
   }
 
   // 선택한 행의 기타 항목명만 표시하거나 숨깁니다. 기존 입력값은 유지합니다.
@@ -106,10 +129,14 @@
     }
   }
 
-  // 첫 행을 복사하되 기존 상담 내용은 복사하지 않습니다.
+  // 보관한 원본으로 빈 행을 추가합니다.
   function addConsultationRow() {
     const rowIndex = consultationRows.children.length;
-    const newRow = consultationRows.firstElementChild.cloneNode(true);
+    if (rowIndex >= 100) {
+      consultationRowStatus.textContent = '상담 내용은 최대 100행까지 입력할 수 있습니다.';
+      return;
+    }
+    const newRow = consultationRowTemplate.cloneNode(true);
 
     setConsultationRowFieldNames(newRow, rowIndex);
     resetConsultationRow(newRow);
@@ -117,6 +144,24 @@
 
     newRow.querySelector('select').focus();
     consultationRowStatus.textContent = `상담 내용 ${rowIndex + 1}행이 추가되었습니다.`;
+  }
+
+  function removeConsultationRow(event) {
+    const removeButton = event.target.closest('.consultation-remove');
+    if (!removeButton) return;
+
+    const row = removeButton.closest('.consultation-row');
+    const rowNumber = Array.from(consultationRows.children).indexOf(row) + 1;
+    const focusRow = row.nextElementSibling || row.previousElementSibling;
+    row.remove();
+
+    // 중간 행을 삭제해도 서버에 전달되는 배열 번호는 0부터 연속으로 유지합니다.
+    Array.from(consultationRows.children).forEach(setConsultationRowFieldNames);
+    const focusTarget = focusRow
+      ? focusRow.querySelector('.consultation-remove')
+      : document.getElementById('add-consultation-row');
+    focusTarget.focus();
+    consultationRowStatus.textContent = `상담 내용 ${rowNumber}행이 삭제되었습니다. 남은 행은 ${consultationRows.children.length}개입니다.`;
   }
 
   // 각 행의 id, name과 label 연결을 고유하게 지정합니다.
@@ -136,6 +181,7 @@
     contentInput.id = `consultation-content-${rowIndex}`;
     contentInput.name = `consultationItems[${rowIndex}].content`;
     row.querySelector('label[for^="consultation-content-"]').htmlFor = contentInput.id;
+    row.querySelector('.consultation-remove').setAttribute('aria-label', `상담 내용 ${rowIndex + 1}행 삭제`);
   }
 
   // 새 행은 첫 번째 항목 선택, 내용 비움, 기타 입력칸 숨김 상태로 시작합니다.
