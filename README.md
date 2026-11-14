@@ -8,9 +8,9 @@ Java 25 / Spring Boot 4.0.8 / Spring MVC / Thymeleaf / Spring JDBC / Supabase Po
 - **목록 화면**: 현장명, 고객명, 연락처, 현장 주소, 진행 상태와 전체 건수
 - **등록 화면**: 고객명, 연락처, 현장명, 주소와 상담 항목 입력·검증·저장
 - 고객 상세: 목록의 현장명을 클릭해 고객·현장·상담 항목 조회, 등록과 같은 필드의 읽기 전용 화면
-- AI 상담 정리: 기존 화면 골격 유지
+- AI 상담 정리: 현장을 선택해 진행 상태·고객 공통 상담 기록에 질문하거나, 현장 선택 없이 일반 질문
 
-고객·현장·상담 항목 등록과 수정·고객 삭제(보관)를 지원합니다. 검색·파일 업로드·AI 호출은 구현하지 않았습니다.
+고객·현장·상담 항목 등록과 수정·고객 삭제(보관), AI 현장 질문·답변을 지원합니다. 파일 업로드와 문서·유사도 검색은 준비 중입니다.
 등록 화면에서 고객·현장·상담을 함께 저장하며, 상담 행을 추가하거나 삭제할 수 있습니다.
 상세 조회는 /customers/detail?projectId=현장ID에서 제공합니다. 상세의 수정·삭제 버튼으로 편집하거나 삭제 확인 화면에 진입합니다.
 삭제하면 해당 고객의 모든 현장이 숨겨지며 기존 기록은 보관됩니다. 수정·삭제는 기존 version 컬럼으로 변경 충돌을 감지합니다.
@@ -27,7 +27,7 @@ Java 25 / Spring Boot 4.0.8 / Spring MVC / Thymeleaf / Spring JDBC / Supabase Po
 - [고객](http://localhost:8080/customers)
 - [고객 등록](http://localhost:8080/customers/regform)
 - [고객 상세 선택 안내](http://localhost:8080/customers/detail)
-- [AI 상담 정리 골격](http://localhost:8080/aicounsult)
+- [AI 상담 정리](http://localhost:8080/aicounsult)
 
 기본값은 dev 프로필이며 서버는 `127.0.0.1:8080`에 열립니다.
 JDK 25가 필요합니다. IntelliJ는 Maven 재로드 후 **Interior CMS Local**을 실행합니다.
@@ -56,7 +56,7 @@ src/main/java/com/roofandwall/interior/customer/
 src/main/java/com/roofandwall/interior/scene/
   controller/SceneController.java
 src/main/java/com/roofandwall/interior/aicounsult/
-  controller/AICounsultController.java
+  AICounsultController.java
 src/main/resources/templates/customer/
   customer-list.html
   customer-registration.html
@@ -89,12 +89,31 @@ H2 드라이버와 테스트 스키마는 테스트 전용이며 실행 JAR에 �
 
 HTML/CSS는 dev 프로필에서 저장 후 새로고침, Java는 IDE 빌드 이후 DevTools 재시작으로 반영됩니다.
 
+## AI 현장 질문
+
+Java 서버와 `ai-service`의 Python 서버를 함께 실행합니다. `ai-service/.env`에 `OPENAI_API_KEY`와 `OPENAI_MODEL`을 설정하고, 별도 터미널에서 실행합니다.
+
+```powershell
+cd ai-service
+.\.venv\Scripts\python.exe -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
+```
+
+로그인 후 AI 화면에서 현장을 선택하고 “현재 진행 단계와 고객 요청사항을 알려줘”처럼 질문합니다.
+Java가 매번 로그인 업체 범위에서 DB를 조회하고, 현장 ID·현장명·진행 상태·상담 항목과 질문을 Python `/chat`으로 보냅니다.
+Python은 이 자료를 OpenAI에 전달해 답변을 생성합니다. 고객명·연락처·주소 필드는 모델에 별도로 보내지 않지만 상담 본문에 포함된 정보는 전달됩니다.
+화면 아래에는 같은 요청에서 조회한 근거 기록과 고객 상세 링크를 표시합니다.
+
+기존 상담 항목은 현장별이 아니라 고객별 기록이므로 **고객 공통 상담**으로 안내합니다. 현장별 상담으로 분리하는 DB 변경은 하지 않습니다.
+진행상황은 DB에 저장된 단계이며, 없는 진행률·일정·변경 이력을 추측하지 않도록 지시합니다.
+현장을 선택하지 않으면 일반 질문으로 동작합니다. 대화 이력 저장·모델 학습은 하지 않으며 질문마다 새로 답변합니다.
+테스트는 Java의 `AICounsultIntegrationTest`와 Python의 `ai-service/test_chat.py`에 있습니다. Python 테스트는 `ai-service`에서 `.\.venv\Scripts\python.exe -m unittest -v`로 실행합니다.
+
 ## 로그인
 
 /login에서 기존 Supabase interior_cms.staff_accounts의 아이디와 비밀번호를 사용합니다.
 아이디는 앞뒤 공백과 대소문자를 구분하지 않으며 기존 BCrypt 해시를 검증합니다.
 비활성 계정 또는 이메일이 있으나 확인되지 않은 계정은 로그인할 수 없습니다.
 계정 생성·비밀번호 초기화·이메일 발송·회원가입은 추가하지 않았습니다.
-로그인 성공 후 /customers로 이동하며, 메뉴의 로그아웃 버튼으로 세션을 종료합니다.
+로그인 성공 후 AI 상담 정리 화면(/aicounsult)으로 이동하며, 메뉴의 로그아웃 버튼으로 세션을 종료합니다.
 업무 화면은 로그인이 필요하고 조회 업체는 로그인 직원 계정의 company_id입니다.
 POST 요청은 CSRF 토큰이 필요합니다. 사용자명 표시와 로그아웃은 공통 메뉴에 포함됩니다.

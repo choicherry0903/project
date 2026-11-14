@@ -77,7 +77,7 @@ class AuthIntegrationTest {
     void existingBcryptAccountLogsInCaseInsensitivelyAndScopesProjectsByStaffCompany() throws Exception {
         MockHttpSession session = (MockHttpSession) mvc.perform(formLogin().user(" OFFICE ").password(PASSWORD))
                 .andExpect(authenticated().withUsername("office"))
-                .andExpect(redirectedUrl("/customers"))
+                .andExpect(redirectedUrl("/aicounsult"))
                 .andReturn().getRequest().getSession(false);
         SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
         assertThat(((StaffPrincipal) context.getAuthentication().getPrincipal()).getCompanyId()).isEqualTo(2);
@@ -95,7 +95,7 @@ class AuthIntegrationTest {
         String html = mvc.perform(get("/customers").session(session))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
         assertThat(html).contains("우리 업체 현장", "테스트 직원").doesNotContain("다른 업체 현장");
-        mvc.perform(get("/login").session(session)).andExpect(redirectedUrl("/customers"));
+        mvc.perform(get("/login").session(session)).andExpect(redirectedUrl("/aicounsult"));
     }
 
     @ParameterizedTest

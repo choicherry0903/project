@@ -44,11 +44,6 @@ public class CustomerController {
         return new CustomerItem.ConsultationItem();
     }
 
-    @GetMapping("/")
-    public String home() {
-        return "redirect:/customers";
-    }
-
     @GetMapping("/customers")
     public String list(Model model, @AuthenticationPrincipal StaffPrincipal staff) {
         model.addAttribute("result", customerQueryService.findAll(staff.getCompanyId()));

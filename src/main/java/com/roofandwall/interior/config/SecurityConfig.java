@@ -25,7 +25,7 @@ public class SecurityConfig {
                     .usernameParameter("username")
                     .passwordParameter("password")
                     .failureUrl("/login?error")
-                    .defaultSuccessUrl("/customers", true)
+                    .defaultSuccessUrl("/aicounsult", true)
                     .permitAll())
                 .logout(logout -> logout
                     .logoutUrl("/logout")

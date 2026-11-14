@@ -28,10 +28,10 @@ class ScreenScaffoldIntegrationTest {
     private MockMvc mvc;
 
     @Test
-    void homeOpensProjectList() throws Exception {
+    void homeOpensAiConsultation() throws Exception {
         mvc.perform(get("/").with(TestStaff.signedIn()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/customers"));
+                .andExpect(redirectedUrl("/aicounsult"));
     }
 
     @ParameterizedTest
@@ -50,7 +50,7 @@ class ScreenScaffoldIntegrationTest {
                 .andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
 
         String navigation = html.substring(html.indexOf("<nav"), html.indexOf("</nav>"));
-        assertThat(navigation).contains("href=\"/customers\"", "href=\"/customers/detail\"", "href=\"/aicounsult\"");
+        assertThat(navigation).containsSubsequence("href=\"/aicounsult\"", "href=\"/customers\"", "href=\"/customers/detail\"");
         assertThat(navigation.split("<a ", -1)).hasSize(4);
         assertThat(navigation.split("aria-current=\"page\"", -1)).hasSize(2);
         assertThat(html).doesNotContain("th:replace", "<script");
